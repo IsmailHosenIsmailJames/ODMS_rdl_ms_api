@@ -1,0 +1,21 @@
+from django.db import models
+
+class UserList(models.Model):
+    sap_id = models.IntegerField(null=False,primary_key=True)
+    full_name = models.CharField(max_length=255,null=False)
+    mobile_number = models.CharField(max_length=255,null=False)
+    class UserType(models.TextChoices):
+        VALUE0 = 'Delivary Assistant', 'Delivary Assistant'
+        VALUE1 = 'Driver', 'Driver'
+    user_type = models.CharField(max_length=20,choices=UserType.choices,null=True, blank=True)
+    password = models.CharField(max_length=255,null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True,null=True)
+
+    def __str__(self):
+        return self.full_name
+
+    class Meta:
+        db_table = "rdl_user_list"
+        verbose_name = "RDL User List"
+        verbose_name_plural = "RDL User List"
