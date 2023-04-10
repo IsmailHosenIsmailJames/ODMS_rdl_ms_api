@@ -6,8 +6,8 @@ from user_app.models import UserList
 def upload_to(instance, filename):
     fileName, fileExtension = os.path.splitext(filename)
     path = "attendance_images/"
-    format = str(instance.sap_id) + instance.start_date_time.strftime("%Y%m%d%H%M%S") + fileExtension
-    return os.path.join(path, format)
+    _format = str(instance.sap_id.sap_id) +"-"+ instance.start_date_time.strftime("%Y%m%d%H%M%S") + fileExtension
+    return os.path.join(path, _format)
 
 class Attendance(models.Model):
     id = models.AutoField(primary_key=True)
@@ -32,7 +32,7 @@ class Attendance(models.Model):
     updated_at = models.DateTimeField(auto_now=True,null=True)
 
     def __str__(self):
-        return str(self.sap_id)
+        return self.sap_id.full_name
     
     class Meta:
         db_table = "rdl_attendance"

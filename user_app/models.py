@@ -9,6 +9,10 @@ class UserList(models.Model):
         VALUE1 = 'Driver', 'Driver'
     user_type = models.CharField(max_length=20,choices=UserType.choices,null=True, blank=True)
     password = models.CharField(max_length=255,null=False)
+    class StatusType(models.IntegerChoices):
+        V0 = 0, "Inactive"
+        V1 = 1, "Active"
+    status = models.PositiveSmallIntegerField(choices=StatusType.choices,default=StatusType.V1,null=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True,null=True)
 
