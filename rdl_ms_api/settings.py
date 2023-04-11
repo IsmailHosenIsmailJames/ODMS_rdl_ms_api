@@ -32,7 +32,7 @@ SECRET_KEY = 'django-insecure-g=_duu5b5%-r(g1itg9v3%cchzcxexzr)esl64n@m=5yx(92o-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -138,5 +138,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 
 runserver.default_port = "6042"
