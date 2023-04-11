@@ -1,18 +1,49 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-from attendance_app.models import UserList
+from datetime import datetime
+from django.utils import timezone
+from attendance_app.models import AttendanceModel
 from attendance_app.serializers import *
 from rest_framework import status
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import permissions
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.decorators import api_view
 
+def get_start_work_details(sap_id):
+    try:
+        return AttendanceModel.objects.raw("SELECT * FROM rdl_attendance WHERE sap_id=%s AND DATE_FORMAT(start_date_time, '%%Y-%%m-%%d') = CURDATE()",[sap_id])[0]
+    except:
+        return None
+    
+def get_end_work_details(sap_id):
+    try:
+        return AttendanceModel.objects.raw("SELECT * FROM rdl_attendance WHERE sap_id=%s AND DATE_FORMAT(end_date_time, '%%Y-%%m-%%d') = CURDATE()",[sap_id])[0]
+    except:
+        return None
+    
 @api_view(['POST'])
 def attendance_start_work(request):
     if request.method == 'POST':
-        serializer = AttendanceInputSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        sap_id = request.data.get('sap_id')
+        start_work_details = get_start_work_details(sap_id)
+        if start_work_details == None:
+            serializer = AttendanceInputSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({"success": True, "result": serializer.data}, status=status.HTTP_200_OK)
+            return Response({"success": False, "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"success": False, "message": 'Already start work'}, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['PUT'])
+def attendance_end_work(request,sap_id):
+    if request.method == 'PUT':
+        end_work_details = get_end_work_details(sap_id)
+        if end_work_details == None:
+            start_work_details = get_start_work_details(sap_id)
+            if start_work_details == None:
+                return Response({"success": False, "message": "Data not found"}, status=status.HTTP_400_BAD_REQUEST)
+            serializer = AttendanceInputSerializer(start_work_details, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({"success": True, "result": serializer.data}, status=status.HTTP_200_OK)
+            return Response({"success": False, "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"success": False, "message": 'Already end work'}, status=status.HTTP_400_BAD_REQUEST)

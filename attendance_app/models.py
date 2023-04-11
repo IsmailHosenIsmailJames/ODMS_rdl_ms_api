@@ -9,7 +9,7 @@ def upload_to(instance, filename):
     _format = str(instance.sap_id.sap_id) +"-"+ instance.start_date_time.strftime("%Y%m%d%H%M%S") + fileExtension
     return os.path.join(path, _format)
 
-class Attendance(models.Model):
+class AttendanceModel(models.Model):
     id = models.AutoField(primary_key=True)
     sap_id = models.ForeignKey(UserList,db_column='sap_id',on_delete=models.DO_NOTHING,null=True)
     start_date_time = models.DateTimeField(null=False)
