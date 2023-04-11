@@ -93,7 +93,7 @@ DATABASES = {
         'PASSWORD': 'radiant@123',
         'HOST': '116.68.200.97',
         'PORT': '60906',
-        'ATOMIC_REQUESTS': True,
+        "TIME_ZONE": "Asia/Dhaka"
     }
 }
 
@@ -122,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Dhaka'
 
 USE_I18N = True
 
