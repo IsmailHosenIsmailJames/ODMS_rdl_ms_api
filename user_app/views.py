@@ -40,7 +40,7 @@ def user_login(request):
 @api_view(['POST'])
 def user_registration(request):
     if request.method == 'POST':
-        serializer = UserDetailsSerializer(data=request.data)
+        serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({"success": True, "result": serializer.data}, status=status.HTTP_200_OK)
