@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'user_app',
     'attendance_app',
     'report_app',
+    'delivery_app',
 ]
 
 MIDDLEWARE = [

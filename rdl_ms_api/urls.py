@@ -9,4 +9,5 @@ urlpatterns = [
     path('api/v1/', include('user_app.urls')),
     path('api/v1/attendance/', include('attendance_app.urls')),
     path('api/v1/reports/', include('report_app.urls')),
+    path('api/v1/delivery/', include('delivery_app.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

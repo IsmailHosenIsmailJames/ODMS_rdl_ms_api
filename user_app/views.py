@@ -28,7 +28,7 @@ def user_login(request):
         password = request.data.get('password')
         login_check = user_login_check(sap_id,password)
         if login_check == None:
-            return Response({"success": False, "message": 'Your sap id or password not match'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"success": False, "message": 'Your sap id or password not match'}, status=status.HTTP_200_OK)
         else:
             is_start_work = False
             start_work_details = get_start_work_details(sap_id)
