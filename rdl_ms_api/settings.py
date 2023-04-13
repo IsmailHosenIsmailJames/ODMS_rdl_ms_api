@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'user_app',
     'attendance_app',
+    'report_app',
 ]
 
 MIDDLEWARE = [

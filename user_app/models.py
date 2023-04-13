@@ -5,7 +5,7 @@ class UserList(models.Model):
     full_name = models.CharField(max_length=255,null=False)
     mobile_number = models.CharField(max_length=255,null=False)
     class UserType(models.TextChoices):
-        VALUE0 = 'Delivary Assistant', 'Delivary Assistant'
+        VALUE0 = 'Delivery Assistant', 'Delivery Assistant'
         VALUE1 = 'Driver', 'Driver'
     user_type = models.CharField(max_length=20,choices=UserType.choices,null=True, blank=True)
     password = models.CharField(max_length=255,null=False)

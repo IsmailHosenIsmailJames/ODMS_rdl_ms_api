@@ -31,9 +31,9 @@ def attendance_start_work(request):
                 serializer.validated_data['start_date_time'] = datetime.now(tz_Dhaka)
                 serializer.save()
                 return Response({"success": True, "result": serializer.data}, status=status.HTTP_200_OK)
-            return Response({"success": False, "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"success": False, "message": serializer.errors}, status=status.HTTP_200_OK)
         else:
-            return Response({"success": False, "message": 'Already start work'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"success": False, "message": 'Already start work'}, status=status.HTTP_200_OK)
     
 @api_view(['PUT'])
 def attendance_end_work(request,sap_id):
@@ -43,12 +43,12 @@ def attendance_end_work(request,sap_id):
         if end_work_details == None:
             start_work_details = get_start_work_details(sap_id)
             if start_work_details == None:
-                return Response({"success": False, "message": "Data not found"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"success": False, "message": "Data not found"}, status=status.HTTP_200_OK)
             serializer = AttendanceInputSerializer(start_work_details, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.validated_data['end_date_time'] = datetime.now(tz_Dhaka)
                 serializer.save()
                 return Response({"success": True, "result": serializer.data}, status=status.HTTP_200_OK)
-            return Response({"success": False, "message": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"success": False, "message": serializer.errors}, status=status.HTTP_200_OK)
         else:
-            return Response({"success": False, "message": 'Already end work'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"success": False, "message": 'Already end work'}, status=status.HTTP_200_OK)
