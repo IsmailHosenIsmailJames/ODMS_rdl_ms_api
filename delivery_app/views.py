@@ -24,6 +24,7 @@ def delivery_list(request,sap_id):
                         'product_code':'1011123',
                         'product_name':'Azicin Tablet 250gm',
                         'qty': 10,
+                        'receive_qty': 0,
                         'per_price': 20.50,
                         'total_price': 205.00,
                     },
@@ -31,6 +32,7 @@ def delivery_list(request,sap_id):
                         'product_code':'1011124',
                         'product_name':'Aristoplex Syrup 250ml',
                         'qty': 40,
+                        'receive_qty': 0,
                         'per_price': 60.32,
                         'total_price': 2412.80,
                     }
@@ -52,6 +54,7 @@ def delivery_list(request,sap_id):
                         'product_code':'1011123',
                         'product_name':'Azicin Tablet 250gm',
                         'qty': 10,
+                        'receive_qty': 10,
                         'per_price': 20.50,
                         'total_price': 205.00,
                     },
@@ -59,6 +62,7 @@ def delivery_list(request,sap_id):
                         'product_code':'1011124',
                         'product_name':'Aristoplex Syrup 250ml',
                         'qty': 40,
+                        'receive_qty': 40,
                         'per_price': 60.32,
                         'total_price': 2412.80,
                     }
