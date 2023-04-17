@@ -57,7 +57,7 @@ def delivery_list(request,sap_id):
             "da_name": key_and_group[key][0].da_name,
             "partner": key_and_group[key][0].partner,
             "customer_name": key_and_group[key][0].customer_name,
-            "customer_addreess": key_and_group[key][0].customer_address,
+            "customer_address": key_and_group[key][0].customer_address,
             "customer_mobile": key_and_group[key][0].customer_mobile,
             "latitude": key_and_group[key][0].latitude,
             "longitude": key_and_group[key][0].longitude,
