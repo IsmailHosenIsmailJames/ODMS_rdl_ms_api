@@ -1,10 +1,10 @@
-from datetime import datetime
 from django.utils import timezone
 from attendance_app.models import AttendanceModel
 from attendance_app.serializers import *
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from datetime import datetime
 import pytz
 
 def get_start_work_details(sap_id):

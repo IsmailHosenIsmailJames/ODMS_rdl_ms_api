@@ -38,6 +38,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'django_database_prefix',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -86,16 +87,17 @@ WSGI_APPLICATION = 'rdl_ms_api.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+DB_PREFIX = 'rdl_'
 DATABASES = {
     'default': {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': BASE_DIR / 'db.sqlite3',
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'rdl_monitoring',
-        'USER': 'root',
-        'PASSWORD': 'radiant@123',
-        'HOST': '116.68.200.97',
-        'PORT': '60906',
+        'NAME': 'radisoft',
+        'USER': 'radisoft',
+        'PASSWORD': 'radisoft@123',
+        'HOST': '119.148.15.109',
+        'PORT': '13306',
         "TIME_ZONE": "Asia/Dhaka"
     }
 }

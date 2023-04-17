@@ -3,4 +3,5 @@ from delivery_app import views
 
 urlpatterns = [
     path('list/<int:sap_id>', views.delivery_list),
+    path('save', views.delivery_save),
 ]
