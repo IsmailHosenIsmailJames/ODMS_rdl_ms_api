@@ -35,6 +35,13 @@ def delivery_list(request,sap_id):
         key_and_group = {key : list(group)}
         sub_data = []
         for item in key_and_group[key]:
+            rec_qty = 0
+            if item.received_quantity is not None:
+                rec_qty = item.received_quantity
+            rec_net_val = 0
+            if item.received_net_val is not None:
+                rec_net_val = item.received_net_val
+
             sub_data.append({
                 "matnr": item.matnr,
                 "quantity": item.quantity,
@@ -45,9 +52,15 @@ def delivery_list(request,sap_id):
                 "material_name": item.material_name,
                 "brand_description": item.brand_description,
                 "brand_name": item.brand_name,
-                "received_quantity": item.received_quantity,
-                "received_net_val": item.received_net_val,
+                "received_quantity": rec_qty,
+                "received_net_val": rec_net_val,
             })
+
+            cash_collection = 0
+            if key_and_group[key][0].cash_collection is not None:
+                cash_collection = key_and_group[key][0].cash_collection
+
+            
         main_data = {
             "billing_doc_no": key_and_group[key][0].billing_doc_no,
             "billing_date": key_and_group[key][0].billing_date,
@@ -62,7 +75,7 @@ def delivery_list(request,sap_id):
             "latitude": key_and_group[key][0].latitude,
             "longitude": key_and_group[key][0].longitude,
             "delivery_status": key_and_group[key][0].delivery_status,
-            "cash_collection": key_and_group[key][0].cash_collection,
+            "cash_collection": cash_collection,
             "collection_status": key_and_group[key][0].collection_status,
             "gate_pass_no": key_and_group[key][0].gate_pass_no,
             "vehicle_no": key_and_group[key][0].vehicle_no,
