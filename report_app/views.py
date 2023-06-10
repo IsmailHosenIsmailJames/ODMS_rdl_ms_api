@@ -2,13 +2,28 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
+from report_app.models import ReportOneModel
+from django.db import connection
+
+def execute_raw_query(query, params=None):
+    with connection.cursor() as cursor:
+        cursor.execute(query, params)
+        results = cursor.fetchall()
+    return results
 
 @api_view(['GET'])
 def dashboard_report(request,sap_id):
     if request.method == 'GET':
+        sql= "SELECT " \
+            "(SELECT COUNT(DISTINCT dis.billing_doc_no) c FROM rdl_delivery_info_sap dis WHERE dis.billing_date = CURRENT_DATE() AND dis.da_code = '%s') total_delivary," \
+            "(SELECT COUNT(*) c FROM rdl_delivery d WHERE d.billing_date = CURRENT_DATE() AND d.da_code = '%s') total_delivary_done;"
+        
+        result = execute_raw_query(sql,[sap_id,sap_id])
+        print(result[0][0])
+
         return Response({"success": True, "result": [{
-            'delivery_remaining': 20,
-            'delivery_done': 5,
+            'delivery_remaining': result[0][0]-result[0][1],
+            'delivery_done': result[0][1],
             'cash_remaining': 50000,
             'cash_done': 20000,
             'sap_id': sap_id
