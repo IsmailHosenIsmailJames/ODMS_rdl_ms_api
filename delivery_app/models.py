@@ -11,9 +11,15 @@ class DeliveryModel(models.Model):
     da_code = models.CharField(max_length=8,null=False)
     vehicle_no = models.CharField(max_length=25,null=True)
     route_code = models.CharField(max_length=6,null=True)
-    received_date_time = models.DateTimeField(null=True,blank=True)
-    latitude = models.DecimalField(max_digits=27, decimal_places=16,null=True)
-    longitude = models.DecimalField(max_digits=27, decimal_places=16,null=True)
+    delivery_date_time = models.DateTimeField(null=True,blank=True)
+    cash_collection_date_time = models.DateTimeField(null=True,blank=True)
+    return_date_time = models.DateTimeField(null=True,blank=True)
+    delivery_latitude = models.DecimalField(max_digits=27, decimal_places=16,null=True)
+    delivery_longitude = models.DecimalField(max_digits=27, decimal_places=16,null=True)
+    cash_collection_latitude = models.DecimalField(max_digits=27, decimal_places=16,null=True)
+    cash_collection_longitude = models.DecimalField(max_digits=27, decimal_places=16,null=True)
+    return_latitude = models.DecimalField(max_digits=27, decimal_places=16,null=True)
+    return_longitude = models.DecimalField(max_digits=27, decimal_places=16,null=True)
     class TransportType(models.TextChoices):
         V0 = 'Car', 'Car'
         V1 = 'Walk', 'Walk'
@@ -25,13 +31,14 @@ class DeliveryModel(models.Model):
         V2 = 'Done', 'Done'
     delivery_status = models.CharField(max_length=20,choices=DeliveryStatus.choices,null=True)
     cash_collection = models.DecimalField(max_digits=8, decimal_places=2,null=True)
-    class CollectionStatus(models.TextChoices):
+    class CashCollectionStatus(models.TextChoices):
         V0 = 'Pending', 'Pending'
         V1 = 'Cancel', 'Cancel'
         V2 = 'Done', 'Done'
-    collection_status = models.CharField(max_length=20,choices=CollectionStatus.choices,null=True)
+    cash_collection_status = models.CharField(max_length=20,choices=CashCollectionStatus.choices,null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True,null=True)
+    last_status = models.CharField(max_length=80,null=True)
 
     def __str__(self):
         return self.billing_doc_no
@@ -50,8 +57,10 @@ class DeliveryListModel(models.Model):
     tp = models.DecimalField(max_digits=8, decimal_places=2,null=True)
     vat = models.DecimalField(max_digits=8, decimal_places=2,null=True)
     net_val = models.DecimalField(max_digits=8, decimal_places=2,null=True)
-    received_quantity = models.DecimalField(max_digits=8, decimal_places=2,null=True)
-    received_net_val = models.DecimalField(max_digits=8, decimal_places=2,null=True)
+    delivery_quantity = models.DecimalField(max_digits=8, decimal_places=2,null=True)
+    delivery_net_val = models.DecimalField(max_digits=8, decimal_places=2,null=True)
+    return_quantity = models.DecimalField(max_digits=8, decimal_places=2,null=True)
+    return_net_val = models.DecimalField(max_digits=8, decimal_places=2,null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True,null=True)
 
@@ -97,7 +106,7 @@ class DeliveryInfoModel(models.Model):
     received_quantity = models.TextField(blank=True)
     delivery_status = models.TextField(blank=True)
     cash_collection = models.TextField(blank=True)
-    collection_status = models.TextField(blank=True)
+    cash_collection_status = models.TextField(blank=True)
 
     class Meta:
         managed = False

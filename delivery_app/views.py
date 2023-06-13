@@ -17,7 +17,7 @@ def delivery_list(request,sap_id):
                 "m.material_name,m.brand_description,m.brand_name, " \
                 "CONCAT(c.name1,c.name2) customer_name,CONCAT(c.street,c.street1,c.street2) customer_address,c.mobile_no customer_mobile, " \
                 "cl.latitude,cl.longitude, " \
-                "dl.received_quantity,dl.received_net_val,IF(d.delivery_status IS NULL,'Pending',d.delivery_status) delivery_status,d.cash_collection,IF(d.collection_status IS NULL,'Pending',d.collection_status) collection_status " \
+                "dl.delivery_quantity,dl.delivery_net_val,IF(d.delivery_status IS NULL,'Pending',d.delivery_status) delivery_status,d.cash_collection,IF(d.cash_collection_status IS NULL,'Pending',d.cash_collection_status) cash_collection_status " \
                 "FROM rdl_delivery_info_sap dis " \
                 "INNER JOIN rdl_route_sap rs ON dis.route=rs.route " \
                 "INNER JOIN rpl_sales_info_sap sis ON dis.billing_doc_no=sis.billing_doc_no " \
@@ -36,11 +36,11 @@ def delivery_list(request,sap_id):
         sub_data = []
         for item in key_and_group[key]:
             rec_qty = 0
-            if item.received_quantity is not None:
-                rec_qty = item.received_quantity
+            if item.delivery_quantity is not None:
+                rec_qty = item.delivery_quantity
             rec_net_val = 0
-            if item.received_net_val is not None:
-                rec_net_val = item.received_net_val
+            if item.delivery_net_val is not None:
+                rec_net_val = item.delivery_net_val
 
             sub_data.append({
                 "matnr": item.matnr,
@@ -52,8 +52,8 @@ def delivery_list(request,sap_id):
                 "material_name": item.material_name,
                 "brand_description": item.brand_description,
                 "brand_name": item.brand_name,
-                "received_quantity": rec_qty,
-                "received_net_val": rec_net_val,
+                "delivery_quantity": rec_qty,
+                "delivery_net_val": rec_net_val,
             })
 
             cash_collection = 0
@@ -76,7 +76,7 @@ def delivery_list(request,sap_id):
             "longitude": key_and_group[key][0].longitude,
             "delivery_status": key_and_group[key][0].delivery_status,
             "cash_collection": cash_collection,
-            "collection_status": key_and_group[key][0].collection_status,
+            "cash_collection_status": key_and_group[key][0].cash_collection_status,
             "gate_pass_no": key_and_group[key][0].gate_pass_no,
             "vehicle_no": key_and_group[key][0].vehicle_no,
             "product_list": sub_data
@@ -90,7 +90,12 @@ def delivery_save(request):
         tz_Dhaka = pytz.timezone('Asia/Dhaka')
         serializer = DeliverySerializer(data=request.data)
         if serializer.is_valid():
-            serializer.validated_data['received_date_time'] = datetime.now(tz_Dhaka)
+            if request.data.get('type') == "delivery":
+                serializer.validated_data['delivery_date_time'] = datetime.now(tz_Dhaka)
+            if request.data.get('type') == "cash_collection":
+                serializer.validated_data['cash_collection_date_time'] = datetime.now(tz_Dhaka)
+            if request.data.get('type') == "return":
+                serializer.validated_data['return_date_time'] = datetime.now(tz_Dhaka)
             serializer.save()
             return Response({"success": True, "result": serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

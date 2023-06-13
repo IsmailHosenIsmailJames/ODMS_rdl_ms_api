@@ -4,6 +4,10 @@ from rest_framework import status
 from rest_framework.response import Response
 from collection_app.models import CashCollectionInfoModel
 from itertools import groupby
+import pytz
+from delivery_app.models import DeliveryModel
+from delivery_app.serializers import DeliverySerializer
+from datetime import datetime
 
 @api_view(['GET'])
 def cash_collection_list(request,sap_id):
@@ -52,3 +56,26 @@ def cash_collection_list(request,sap_id):
             }
             data.append(main_data)
         return Response({"success": True, "result": data}, status=status.HTTP_200_OK)
+
+
+@api_view(['PUT'])
+def cash_collection_save(request, pk):
+    try:
+        delivery = DeliveryModel.objects.get(pk=pk)
+    except DeliveryModel.DoesNotExist:
+        return Response({"error": "Delivery not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    tz_Dhaka = pytz.timezone('Asia/Dhaka')
+    serializer = DeliverySerializer(delivery, data=request.data, partial=True)
+    if serializer.is_valid():
+        
+        if request.data.get('type') == "cash_collection":
+            serializer.validated_data['cash_collection_date_time'] = datetime.now(tz_Dhaka)
+        elif request.data.get('type') == "return":
+            serializer.validated_data['return_date_time'] = datetime.now(tz_Dhaka)
+        
+        serializer.update(delivery, serializer.validated_data)
+        
+        return Response({"success": True, "result": serializer.data}, status=status.HTTP_200_OK)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
