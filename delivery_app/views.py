@@ -25,7 +25,7 @@ def delivery_list(request,sap_id):
                 "INNER JOIN rpl_customer c ON sis.partner=c.partner " \
                 "LEFT JOIN exf_customer_location cl ON sis.partner=cl.customer_id " \
                 "LEFT JOIN rdl_delivery d ON sis.billing_doc_no=d.billing_doc_no " \
-                "LEFT JOIN rdl_delivery_list dl ON sis.billing_doc_no=d.billing_doc_no " \
+                "LEFT JOIN rdl_delivery_list dl ON d.id=dl.delivery_id AND sis.matnr=dl.matnr " \
                 "WHERE dis.billing_date = CURRENT_DATE() AND dis.da_code = '%s';"
 
     data_list = DeliveryInfoModel.objects.raw(sql,[sap_id])
