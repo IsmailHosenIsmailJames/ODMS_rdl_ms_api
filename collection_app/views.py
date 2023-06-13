@@ -20,7 +20,7 @@ def cash_collection_list(request,sap_id):
             "INNER JOIN rdl_route_sap rs ON d.route_code=rs.route " \
             "LEFT JOIN exf_customer_location cl ON d.partner=cl.customer_id " \
             "INNER JOIN rpl_material m ON dl.matnr=m.matnr " \
-            "WHERE d.delivery_status='Done' AND d.da_code='%s' GROUP BY sis.billing_doc_no,dl.matnr;"
+            "WHERE d.billing_date=CURRENT_DATE() AND d.delivery_status='Done' AND d.da_code='%s' GROUP BY sis.billing_doc_no,dl.matnr;"
 
         data_list = CashCollectionInfoModel.objects.raw(sql,[sap_id])
         an_iterator = groupby(data_list, lambda x : x.id)
