@@ -15,6 +15,8 @@ def delivery_list(request,sap_id):
         query = ""
         if d_type == 'All':
             query = ""
+        elif d_type == 'Remaining':
+            query = "AND d.delivery_status IS NULL"
         else:
             query = "AND d.delivery_status = '"+d_type+"'"
 
