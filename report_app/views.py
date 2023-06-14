@@ -25,8 +25,8 @@ def dashboard_report(request,sap_id):
         return Response({"success": True, "result": [{
             'delivery_remaining': result[0][0]-result[0][1],
             'delivery_done': result[0][1],
-            'cash_remaining': result[0][0]-result[0][2],
-            'cash_done': result[0][2],
+            'cash_remaining': result[0][2],
+            'cash_done': result[0][3],
             'sap_id': sap_id
         }]}, status=status.HTTP_200_OK)
     
