@@ -2,10 +2,9 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework import status
 from rest_framework.response import Response
-from collection_app.models import CashCollectionInfoModel
 from itertools import groupby
 import pytz
-from delivery_app.models import DeliveryModel
+from delivery_app.models import DeliveryInfoModel, DeliveryModel
 from delivery_app.serializers import DeliverySerializer
 from datetime import datetime
 
@@ -36,36 +35,62 @@ def cash_collection_list(request,sap_id):
                 "LEFT JOIN rdl_delivery d ON sis.billing_doc_no=d.billing_doc_no " \
                 "LEFT JOIN rdl_delivery_list dl ON d.id=dl.delivery_id AND sis.matnr=dl.matnr " \
                 "WHERE dis.billing_date = CURRENT_DATE() AND dis.da_code = '%s' "+query+" ;"
-
-        data_list = CashCollectionInfoModel.objects.raw(sql,[sap_id])
-        an_iterator = groupby(data_list, lambda x : x.id)
+        
+        data_list = DeliveryInfoModel.objects.raw(sql,[sap_id])
+        an_iterator = groupby(data_list, lambda x : x.billing_doc_no)
         data = []
         for key, group in an_iterator:
             key_and_group = {key : list(group)}
             sub_data = []
             for item in key_and_group[key]:
+                rec_qty = 0
+                if item.delivery_quantity is not None:
+                    rec_qty = item.delivery_quantity
+                rec_net_val = 0
+                if item.delivery_net_val is not None:
+                    rec_net_val = item.delivery_net_val
+
                 sub_data.append({
-                    "product_code": item.product_code,
-                    "product_name": item.product_name,
-                    "qty": item.qty,
-                    "per_price": item.per_price,
-                    "total_price": item.total_price,
+                    "matnr": item.matnr,
+                    "quantity": item.quantity,
+                    "tp": item.tp,
+                    "vat": item.vat,
+                    "net_val": item.net_val,
+                    "batch": item.batch,
+                    "material_name": item.material_name,
+                    "brand_description": item.brand_description,
+                    "brand_name": item.brand_name,
+                    "delivery_quantity": rec_qty,
+                    "delivery_net_val": rec_net_val,
                 })
 
+                cash_collection = 0
+                if key_and_group[key][0].cash_collection is not None:
+                    cash_collection = key_and_group[key][0].cash_collection
+
+                
             main_data = {
-                "id": key_and_group[key][0].id,
-                "invoice_date": key_and_group[key][0].invoice_date,
-                "customer_name": key_and_group[key][0].customer_name,
-                "customer_addreess": key_and_group[key][0].customer_address,
-                "customer_mobile": key_and_group[key][0].customer_mobile,
-                "delevery_type": key_and_group[key][0].delevery_type,
+                "billing_doc_no": key_and_group[key][0].billing_doc_no,
+                "billing_date": key_and_group[key][0].billing_date,
+                "route_code": key_and_group[key][0].route,
                 "route_name": key_and_group[key][0].route_name,
+                "da_code": key_and_group[key][0].da_code,
+                "da_name": key_and_group[key][0].da_name,
+                "partner": key_and_group[key][0].partner,
+                "customer_name": key_and_group[key][0].customer_name,
+                "customer_address": key_and_group[key][0].customer_address,
+                "customer_mobile": key_and_group[key][0].customer_mobile,
                 "latitude": key_and_group[key][0].latitude,
                 "longitude": key_and_group[key][0].longitude,
-                "status": key_and_group[key][0].status,
+                "delivery_status": key_and_group[key][0].delivery_status,
+                "cash_collection": cash_collection,
+                "cash_collection_status": key_and_group[key][0].cash_collection_status,
+                "gate_pass_no": key_and_group[key][0].gate_pass_no,
+                "vehicle_no": key_and_group[key][0].vehicle_no,
                 "product_list": sub_data
             }
             data.append(main_data)
+
         return Response({"success": True, "result": data}, status=status.HTTP_200_OK)
 
 
