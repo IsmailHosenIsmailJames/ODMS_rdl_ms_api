@@ -25,6 +25,7 @@ def cash_collection_list(request,sap_id):
                 "m.material_name,m.brand_description,m.brand_name, " \
                 "CONCAT(c.name1,c.name2) customer_name,CONCAT(c.street,c.street1,c.street2) customer_address,c.mobile_no customer_mobile, " \
                 "cl.latitude,cl.longitude, " \
+                "d.id,dl.id list_id," \
                 "dl.delivery_quantity,dl.delivery_net_val,IF(d.delivery_status IS NULL,'Pending',d.delivery_status) delivery_status,d.cash_collection,IF(d.cash_collection_status IS NULL,'Pending',d.cash_collection_status) cash_collection_status " \
                 "FROM rdl_delivery_info_sap dis " \
                 "INNER JOIN rdl_route_sap rs ON dis.route=rs.route " \
@@ -51,6 +52,7 @@ def cash_collection_list(request,sap_id):
                     rec_net_val = item.delivery_net_val
 
                 sub_data.append({
+                    "id": item.list_id,
                     "matnr": item.matnr,
                     "quantity": item.quantity,
                     "tp": item.tp,
@@ -70,6 +72,7 @@ def cash_collection_list(request,sap_id):
 
                 
             main_data = {
+                "id": key_and_group[key][0].id,
                 "billing_doc_no": key_and_group[key][0].billing_doc_no,
                 "billing_date": key_and_group[key][0].billing_date,
                 "route_code": key_and_group[key][0].route,

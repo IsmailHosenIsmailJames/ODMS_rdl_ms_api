@@ -74,6 +74,8 @@ class DeliveryListModel(models.Model):
 
 
 class DeliveryInfoModel(models.Model):
+    id = models.TextField(blank=True)
+    list_id = models.TextField(blank=True)
     billing_doc_no = models.TextField(blank=True,primary_key=True)
     billing_date = models.TextField(blank=True)
     delv_no = models.TextField(blank=True)
