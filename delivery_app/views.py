@@ -88,7 +88,7 @@ def delivery_list(request,sap_id):
 def delivery_save(request):
     if request.method == 'POST':
         tz_Dhaka = pytz.timezone('Asia/Dhaka')
-        serializer = DeliverySerializer(data=request.data)
+        serializer = DeliverySerializer(data=request.data, partial=True)
         if serializer.is_valid():
             if request.data.get('type') == "delivery":
                 serializer.validated_data['delivery_date_time'] = datetime.now(tz_Dhaka)
