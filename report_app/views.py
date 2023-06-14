@@ -20,7 +20,7 @@ def dashboard_report(request,sap_id):
                 "(SELECT COUNT(*) c FROM rdl_delivery d WHERE d.billing_date = CURRENT_DATE() AND d.da_code = '%s' AND delivery_status = 'Done') total_collection, " \
                 "(SELECT COUNT(*) c FROM rdl_delivery d WHERE d.billing_date = CURRENT_DATE() AND d.da_code = '%s' AND cash_collection_status = 'Done') total_collection_done;"
         
-        result = execute_raw_query(sql,[sap_id,sap_id,sap_id])
+        result = execute_raw_query(sql,[sap_id,sap_id,sap_id,sap_id])
 
         return Response({"success": True, "result": [{
             'delivery_remaining': result[0][0]-result[0][1],
