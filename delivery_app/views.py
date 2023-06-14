@@ -12,6 +12,12 @@ import pytz
 def delivery_list(request,sap_id):
     if request.method == 'GET':
         d_type = request.query_params.get("type")
+        query = ""
+        if d_type == 'All':
+            query = ""
+        else:
+            query = "AND d.delivery_status = '"+d_type+"'"
+
         sql = "SELECT dis.*,rs.description route_name, " \
                 "sis.billing_type,sis.partner,sis.matnr,sis.quantity,sis.tp,sis.vat,sis.net_val,sis.assigment,sis.gate_pass_no,sis.batch,sis.plant,sis.team,sis.created_on, " \
                 "m.material_name,m.brand_description,m.brand_name, " \
@@ -26,7 +32,7 @@ def delivery_list(request,sap_id):
                 "LEFT JOIN exf_customer_location cl ON sis.partner=cl.customer_id " \
                 "LEFT JOIN rdl_delivery d ON sis.billing_doc_no=d.billing_doc_no " \
                 "LEFT JOIN rdl_delivery_list dl ON d.id=dl.delivery_id AND sis.matnr=dl.matnr " \
-                "WHERE dis.billing_date = CURRENT_DATE() AND dis.da_code = '%s';"
+                "WHERE dis.billing_date = CURRENT_DATE() AND dis.da_code = '%s' "+query+" ;"
 
     data_list = DeliveryInfoModel.objects.raw(sql,[sap_id])
     an_iterator = groupby(data_list, lambda x : x.billing_doc_no)
