@@ -13,18 +13,29 @@ from datetime import datetime
 def cash_collection_list(request,sap_id):
     if request.method == 'GET':
         d_type = request.query_params.get("type")
-        sql = "SELECT d.billing_doc_no id, d.billing_date invoice_date, " \
-            "CONCAT(c.name1,c.name2) customer_name,CONCAT(c.street,c.street1,c.street2) customer_address,c.mobile_no customer_mobile, " \
-            "d.transport_type delevery_type,rs.description route_name, cl.latitude, cl.longitude, 'Pending' status, " \
-            "dl.matnr product_code, m.brand_description product_name, dl.quantity qty, dl.tp per_price, dl.net_val total_price " \
-            "FROM rdl_delivery_list dl  " \
-            "INNER JOIN rdl_delivery d ON dl.delivery_id=d.id  " \
-            "INNER JOIN rpl_sales_info_sap sis On d.billing_doc_no=sis.billing_doc_no " \
-            "INNER JOIN rpl_customer c ON d.partner=c.partner " \
-            "INNER JOIN rdl_route_sap rs ON d.route_code=rs.route " \
-            "LEFT JOIN exf_customer_location cl ON d.partner=cl.customer_id " \
-            "INNER JOIN rpl_material m ON dl.matnr=m.matnr " \
-            "WHERE d.billing_date=CURRENT_DATE() AND d.delivery_status='Done' AND d.da_code='%s' GROUP BY sis.billing_doc_no,dl.matnr;"
+        query = " AND d.delivery_status = 'Done' "
+        if d_type == 'All':
+            query = query
+        elif d_type == 'Remaining':
+            query = query + "AND d.cash_collection_status IS NULL"
+        else:
+            query = query + "AND d.cash_collection_status = '"+d_type+"'"
+
+        sql = "SELECT dis.*,rs.description route_name, " \
+                "sis.billing_type,sis.partner,sis.matnr,sis.quantity,sis.tp,sis.vat,sis.net_val,sis.assigment,sis.gate_pass_no,sis.batch,sis.plant,sis.team,sis.created_on, " \
+                "m.material_name,m.brand_description,m.brand_name, " \
+                "CONCAT(c.name1,c.name2) customer_name,CONCAT(c.street,c.street1,c.street2) customer_address,c.mobile_no customer_mobile, " \
+                "cl.latitude,cl.longitude, " \
+                "dl.delivery_quantity,dl.delivery_net_val,IF(d.delivery_status IS NULL,'Pending',d.delivery_status) delivery_status,d.cash_collection,IF(d.cash_collection_status IS NULL,'Pending',d.cash_collection_status) cash_collection_status " \
+                "FROM rdl_delivery_info_sap dis " \
+                "INNER JOIN rdl_route_sap rs ON dis.route=rs.route " \
+                "INNER JOIN rpl_sales_info_sap sis ON dis.billing_doc_no=sis.billing_doc_no " \
+                "INNER JOIN rpl_material m ON sis.matnr=m.matnr " \
+                "INNER JOIN rpl_customer c ON sis.partner=c.partner " \
+                "LEFT JOIN exf_customer_location cl ON sis.partner=cl.customer_id " \
+                "LEFT JOIN rdl_delivery d ON sis.billing_doc_no=d.billing_doc_no " \
+                "LEFT JOIN rdl_delivery_list dl ON d.id=dl.delivery_id AND sis.matnr=dl.matnr " \
+                "WHERE dis.billing_date = CURRENT_DATE() AND dis.da_code = '%s' "+query+" ;"
 
         data_list = CashCollectionInfoModel.objects.raw(sql,[sap_id])
         an_iterator = groupby(data_list, lambda x : x.id)
