@@ -90,6 +90,7 @@ def cash_collection_list(request,sap_id):
                 "cash_collection_status": key_and_group[key][0].cash_collection_status,
                 "gate_pass_no": key_and_group[key][0].gate_pass_no,
                 "vehicle_no": key_and_group[key][0].vehicle_no,
+                "transport_type": key_and_group[key][0].transport_type,
                 "product_list": sub_data
             }
             data.append(main_data)
