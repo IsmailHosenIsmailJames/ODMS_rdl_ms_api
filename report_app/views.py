@@ -27,6 +27,12 @@ def dashboard_report(request,sap_id):
             'delivery_done': result[0][1],
             'cash_remaining': result[0][2],
             'cash_done': result[0][3],
-            'sap_id': sap_id
+            'sap_id': sap_id,
+            'total_gate_pass_amount': 0,
+            'total_collection_amount': 0, 
+            'total_return_amount': 0, 
+            'total_return_quantity': 0,
+            'due_amount_total': 0,
+            'previous_day_due': 0
         }]}, status=status.HTTP_200_OK)
     
