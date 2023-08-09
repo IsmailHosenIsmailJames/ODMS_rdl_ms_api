@@ -25,7 +25,7 @@ def cash_collection_list(request,sap_id):
                 "m.material_name,m.brand_description,m.brand_name, " \
                 "CONCAT(c.name1,c.name2) customer_name,CONCAT(c.street,c.street1,c.street2) customer_address,c.mobile_no customer_mobile, " \
                 "cl.latitude,cl.longitude, " \
-                "d.id,dl.id list_id," \
+                "d.id,dl.id list_id,d.transport_type," \
                 "dl.delivery_quantity,dl.delivery_net_val,IF(d.delivery_status IS NULL,'Pending',d.delivery_status) delivery_status,d.cash_collection,IF(d.cash_collection_status IS NULL,'Pending',d.cash_collection_status) cash_collection_status " \
                 "FROM rdl_delivery_info_sap dis " \
                 "INNER JOIN rdl_route_sap rs ON dis.route=rs.route " \
