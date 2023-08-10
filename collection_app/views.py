@@ -26,7 +26,7 @@ def cash_collection_list(request,sap_id):
                 "CONCAT(c.name1,c.name2) customer_name,CONCAT(c.street,c.street1,c.street2) customer_address,c.mobile_no customer_mobile, " \
                 "cl.latitude,cl.longitude, " \
                 "d.id,dl.id list_id,d.transport_type," \
-                "dl.delivery_quantity,dl.delivery_net_val,IF(d.delivery_status IS NULL,'Pending',d.delivery_status) delivery_status,d.cash_collection,IF(d.cash_collection_status IS NULL,'Pending',d.cash_collection_status) cash_collection_status " \
+                "dl.return_quantity,dl.return_net_val,dl.delivery_quantity,dl.delivery_net_val,IF(d.delivery_status IS NULL,'Pending',d.delivery_status) delivery_status,d.cash_collection,IF(d.cash_collection_status IS NULL,'Pending',d.cash_collection_status) cash_collection_status " \
                 "FROM rdl_delivery_info_sap dis " \
                 "INNER JOIN rdl_route_sap rs ON dis.route=rs.route " \
                 "INNER JOIN rpl_sales_info_sap sis ON dis.billing_doc_no=sis.billing_doc_no " \
@@ -50,6 +50,12 @@ def cash_collection_list(request,sap_id):
                 rec_net_val = 0
                 if item.delivery_net_val is not None:
                     rec_net_val = item.delivery_net_val
+                return_quantity = 0
+                if item.return_quantity is not None:
+                    return_quantity = item.return_quantity
+                return_net_val = 0
+                if item.return_net_val is not None:
+                    return_net_val = item.return_net_val
 
                 sub_data.append({
                     "id": item.list_id,
@@ -64,6 +70,8 @@ def cash_collection_list(request,sap_id):
                     "brand_name": item.brand_name,
                     "delivery_quantity": rec_qty,
                     "delivery_net_val": rec_net_val,
+                    "return_quantity": return_quantity,
+                    "return_net_val": return_net_val,
                 })
 
                 cash_collection = 0
