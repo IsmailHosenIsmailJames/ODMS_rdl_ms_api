@@ -1,3 +1,4 @@
+import decimal
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework import status
@@ -129,11 +130,13 @@ def cash_collection_save(request, pk):
     tz_Dhaka = pytz.timezone('Asia/Dhaka')
     serializer = DeliverySerializer(delivery, data=request.data, partial=True)
     if serializer.is_valid():
-        sql = "SELECT SUM(net_val) net_val FROM rpl_sales_info_sap sis WHERE sis.billing_doc_no = '%s';"
-        result = execute_raw_query(sql,request.data.get('billing_doc_no'))
+        sql = "SELECT SUM(net_val) net_val FROM rpl_sales_info_sap sis WHERE sis.billing_doc_no = %s;"
+        billing_doc_no = request.data.get('billing_doc_no')
+        result = execute_raw_query(sql,[billing_doc_no])
         serializer.validated_data['net_val']=result[0][0];
         if request.data.get('type') == "cash_collection":
-            due = result[0][0] - request.data.get('cash_collection')
+            cash_collection = request.data.get('cash_collection')
+            due = float(result[0][0]) - float(cash_collection)
             serializer.validated_data['due_amount']=due;
             serializer.validated_data['cash_collection_date_time'] = datetime.now(tz_Dhaka)
         elif request.data.get('type') == "return":
