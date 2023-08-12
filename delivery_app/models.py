@@ -30,7 +30,9 @@ class DeliveryModel(models.Model):
         V1 = 'Cancel', 'Cancel'
         V2 = 'Done', 'Done'
     delivery_status = models.CharField(max_length=20,choices=DeliveryStatus.choices,null=True)
-    cash_collection = models.DecimalField(max_digits=8, decimal_places=2,null=True)
+    net_val = models.DecimalField(max_digits=8, decimal_places=2,null=True, default=0.00)
+    cash_collection = models.DecimalField(max_digits=8, decimal_places=2,null=True, default=0.00)
+    due = models.DecimalField(max_digits=8, decimal_places=2, null=True, default=0.00)
     class CashCollectionStatus(models.TextChoices):
         V0 = 'Pending', 'Pending'
         V1 = 'Cancel', 'Cancel'
