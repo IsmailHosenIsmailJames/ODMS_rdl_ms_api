@@ -7,6 +7,13 @@ import pytz
 from delivery_app.models import DeliveryInfoModel, DeliveryModel
 from delivery_app.serializers import DeliverySerializer
 from datetime import datetime
+from django.db import connection
+
+def execute_raw_query(query, params=None):
+    with connection.cursor() as cursor:
+        cursor.execute(query, params)
+        results = cursor.fetchall()
+    return results
 
 @api_view(['GET'])
 def cash_collection_list(request,sap_id):
@@ -122,8 +129,12 @@ def cash_collection_save(request, pk):
     tz_Dhaka = pytz.timezone('Asia/Dhaka')
     serializer = DeliverySerializer(delivery, data=request.data, partial=True)
     if serializer.is_valid():
-        
+        sql = "SELECT SUM(net_val) net_val FROM rpl_sales_info_sap sis WHERE sis.billing_doc_no = '%s';"
+        result = execute_raw_query(sql,request.data.get('billing_doc_no'))
+        serializer.validated_data['net_val']=result[0][0];
         if request.data.get('type') == "cash_collection":
+            due = result[0][0] - request.data.get('cash_collection')
+            serializer.validated_data['due_amount']=due;
             serializer.validated_data['cash_collection_date_time'] = datetime.now(tz_Dhaka)
         elif request.data.get('type') == "return":
             serializer.validated_data['return_date_time'] = datetime.now(tz_Dhaka)
