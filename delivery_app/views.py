@@ -37,7 +37,6 @@ def delivery_list(request,sap_id):
                 "LEFT JOIN rdl_delivery_list dl ON d.id=dl.delivery_id AND sis.matnr=dl.matnr " \
                 "WHERE dis.billing_date = CURRENT_DATE() AND dis.da_code = '%s' "+query+" ;"
 
-    print(sql)
 
     data_list = DeliveryInfoModel.objects.raw(sql,[sap_id])
     an_iterator = groupby(data_list, lambda x : x.billing_doc_no)
