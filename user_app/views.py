@@ -9,7 +9,7 @@ from attendance_app.models import AttendanceModel
 
 # Create your views here.
 
-def user_login_details(sap_id,password):
+def user_login_details(sap_id):
     try:
         return UserList.objects.get(sap_id=sap_id)
     except UserList.DoesNotExist:
