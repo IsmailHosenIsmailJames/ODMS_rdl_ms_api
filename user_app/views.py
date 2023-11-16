@@ -9,6 +9,12 @@ from attendance_app.models import AttendanceModel
 
 # Create your views here.
 
+def user_login_details(sap_id,password):
+    try:
+        return UserList.objects.get(sap_id=sap_id)
+    except UserList.DoesNotExist:
+        return None
+    
 def user_login_check(sap_id,password):
     try:
         return UserList.objects.get(sap_id=sap_id,password=password)
@@ -63,3 +69,19 @@ def user_registration(request):
             serializer.save()
             return Response({"success": True, "result": serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['GET'])
+def user_details(request):
+    if request.method == 'GET':
+        sap_id = request.query_params.get("sap_id")
+        user_details = user_login_details(sap_id)
+        if user_details == None:
+            return Response({"success": False, "message": 'User not found'}, status=status.HTTP_200_OK)
+        else:
+            is_start_work = False
+            start_work_details = get_start_work_details(sap_id)
+            if start_work_details != None:
+                is_start_work = True
+            serializer = UserDetailsSerializer(user_details, many=False)
+            return Response({"success": True, "result": serializer.data, "is_start_work": is_start_work}, status=status.HTTP_200_OK)
