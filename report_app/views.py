@@ -16,7 +16,7 @@ def dashboard_report(request,sap_id):
     if request.method == 'GET':
         sql= "SELECT " \
 	            "(SELECT COUNT(DISTINCT dis.billing_doc_no) c FROM rdl_delivery_info_sap dis WHERE dis.billing_date = CURRENT_DATE() AND dis.da_code = '%s') total_delivary," \
-	            "(SELECT COUNT(DISTINCT dis.billing_doc_no) c FROM rdl_delivery d WHERE d.billing_date = CURRENT_DATE() AND d.da_code = '%s') total_delivary_done, " \
+	            "(SELECT COUNT(*) c FROM rdl_delivery d WHERE d.billing_date = CURRENT_DATE() AND d.da_code = '%s') total_delivary_done, " \
 	            "(SELECT COUNT(*) c FROM rdl_delivery d WHERE d.billing_date = CURRENT_DATE() AND d.da_code = '%s' AND delivery_status = 'Done' AND cash_collection_status IS NULL) total_collection, " \
                 "(SELECT COUNT(*) c FROM rdl_delivery d WHERE d.billing_date = CURRENT_DATE() AND d.da_code = '%s' AND cash_collection_status = 'Done') total_collection_done, " \
                 "(SELECT SUM(sis.net_val) c FROM rdl_delivery_info_sap dis INNER JOIN rpl_sales_info_sap sis ON dis.billing_doc_no=sis.billing_doc_no WHERE dis.billing_date = CURRENT_DATE() AND dis.da_code = '%s') total_gate_pass_amount," \
