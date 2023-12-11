@@ -43,7 +43,7 @@ def cash_collection_list_v2(request,sap_id):
                 "d.id,dl.id list_id,d.transport_type," \
                 "dl.return_quantity,dl.return_net_val,dl.delivery_quantity,dl.delivery_net_val,IF(d.delivery_status IS NULL,'Pending',d.delivery_status) delivery_status,d.cash_collection,IF(d.cash_collection_status IS NULL,'Pending',d.cash_collection_status) cash_collection_status " \
                 "FROM rdl_delivery_info_sap dis " \
-                "INNER JOIN rdl_route_sap rs ON dis.route=rs.route " \
+                "LEFT JOIN rdl_route_sap rs ON dis.route=rs.route " \
                 "INNER JOIN rpl_sales_info_sap sis ON dis.billing_doc_no=sis.billing_doc_no " \
                 "INNER JOIN rpl_material m ON sis.matnr=m.matnr " \
                 "INNER JOIN rpl_customer c ON sis.partner=c.partner " \
