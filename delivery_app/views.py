@@ -21,7 +21,7 @@ def delivery_list_v2(request,sap_id):
         else:
             query = "AND d.delivery_status = '"+d_type+"'"
 
-        sql = "SELECT dis.*,rs.description route_name, " \
+        sql = "SELECT dis.*,IFNULL(rs.description, 'No Route Name') AS route_name, " \
                 "sis.billing_type,sis.partner,sis.matnr,sis.quantity,sis.tp,sis.vat,sis.net_val,sis.assigment,sis.gate_pass_no,sis.batch,sis.plant,sis.team,sis.created_on, " \
                 "m.material_name,m.brand_description,m.brand_name, " \
                 "CONCAT(c.name1,c.name2) customer_name,CONCAT(c.street,c.street1,c.street2) customer_address,c.mobile_no customer_mobile, " \
