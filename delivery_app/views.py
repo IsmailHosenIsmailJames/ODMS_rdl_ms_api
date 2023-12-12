@@ -27,7 +27,7 @@ def delivery_list_v2(request,sap_id):
                 "CONCAT(c.name1,c.name2) customer_name,CONCAT(c.street,c.street1,c.street2) customer_address,c.mobile_no customer_mobile, " \
                 "cl.latitude,cl.longitude, " \
                 "d.id,dl.id list_id,d.transport_type," \
-                "dl.delivery_quantity,dl.delivery_net_val,IF(d.delivery_status IS NULL,'Pending',d.delivery_status) delivery_status,d.cash_collection,IF(d.cash_collection_status IS NULL,'Pending',d.cash_collection_status) cash_collection_status " \
+                "dl.delivery_quantity,dl.delivery_net_val,dl.return_quantity,dl.return_net_val,IF(d.delivery_status IS NULL,'Pending',d.delivery_status) delivery_status,d.cash_collection,IF(d.cash_collection_status IS NULL,'Pending',d.cash_collection_status) cash_collection_status " \
                 "FROM rdl_delivery_info_sap dis " \
                 "LEFT JOIN rdl_route_sap rs ON dis.route=rs.route " \
                 "INNER JOIN rpl_sales_info_sap sis ON dis.billing_doc_no=sis.billing_doc_no " \
