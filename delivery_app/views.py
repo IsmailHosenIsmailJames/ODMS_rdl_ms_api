@@ -52,6 +52,13 @@ def delivery_list_v2(request,sap_id):
             if item.delivery_net_val is not None:
                 rec_net_val = item.delivery_net_val
 
+            ret_qty = 0
+            if item.return_quantity is not None:
+                ret_qty = item.return_quantity
+            ret_net_val = 0
+            if item.return_net_val is not None:
+                ret_net_val = item.return_net_val
+
             sub_data.append({
                 "id": item.list_id,
                 "matnr": item.matnr,
@@ -65,6 +72,8 @@ def delivery_list_v2(request,sap_id):
                 "brand_name": item.brand_name,
                 "delivery_quantity": rec_qty,
                 "delivery_net_val": rec_net_val,
+                "return_quantity": ret_qty,
+                "return_net_val": ret_net_val,
             })
 
             cash_collection = 0
