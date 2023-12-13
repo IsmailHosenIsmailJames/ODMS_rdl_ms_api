@@ -27,7 +27,7 @@ def cash_collection_list_v2(request,sap_id):
         elif d_type == 'GatePass':
             query = ""
         elif d_type == 'Return':
-            query = " AND d.delivery_status = 'Done' AND dl.return_net_val IS NOT NULL"
+            query = " AND d.delivery_status = 'Done' AND (dl.return_net_val IS NOT NULL OR dl.return_net_val != 0)"
         elif d_type == 'Due':
             query = " AND d.delivery_status = 'Done' AND d.delivery_status = 'Done' AND d.cash_collection_status = 'Done' AND d.due_amount > 1"
         elif d_type == 'Remaining':
