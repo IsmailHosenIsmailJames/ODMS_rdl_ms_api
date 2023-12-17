@@ -133,6 +133,7 @@ def cash_collection_list_v2(request,sap_id):
                     "customer_name": group[0]['customer_name'],
                     "customer_address": group[0]['customer_address'],
                     "customer_mobile": group[0]['customer_mobile'],
+                    "gate_pass_no": group[0]['gate_pass_no'],
                     "latitude": group[0]['latitude'],
                     "longitude": group[0]['longitude'],
                     "invoice_list": group,

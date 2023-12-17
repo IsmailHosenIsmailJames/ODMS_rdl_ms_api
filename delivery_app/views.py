@@ -122,6 +122,7 @@ def delivery_list_v2(request,sap_id):
                 "customer_mobile": group[0]['customer_mobile'],
                 "latitude": group[0]['latitude'],
                 "longitude": group[0]['longitude'],
+                "gate_pass_no": group[0]['gate_pass_no'],
                 "invoice_list": group,
            }) 
 
