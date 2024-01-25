@@ -93,11 +93,12 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': BASE_DIR / 'db.sqlite3',
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'radisoft',
-        'USER': 'radisoft',
-        'PASSWORD': 'radisoft@123',
-        'HOST': '119.148.15.109',
-        'PORT': '13306',
+        'NAME': 'odms_db',
+        'USER': 'root',
+        'PASSWORD': '&j}HS9L02z',
+        'HOST': '127.0.0.1',
+        # 'HOST': '159.203.50.92',
+        'PORT': '3306',
         "TIME_ZONE": "Asia/Dhaka"
     }
 }
