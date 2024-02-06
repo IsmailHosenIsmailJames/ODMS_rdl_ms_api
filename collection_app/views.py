@@ -259,11 +259,11 @@ def cash_collection_save(request, pk):
         sql = "SELECT SUM(net_val) net_val FROM rpl_sales_info_sap sis WHERE sis.billing_doc_no = %s;"
         billing_doc_no = request.data.get('billing_doc_no')
         result = execute_raw_query(sql,[billing_doc_no])
-        serializer.validated_data['net_val']=result[0][0];
+        serializer.validated_data['net_val']=round(result[0][0],2);
         if request.data.get('type') == "cash_collection":
             cash_collection = request.data.get('cash_collection')
             due = float(result[0][0]) - float(cash_collection)
-            serializer.validated_data['due_amount']=due;
+            serializer.validated_data['due_amount']=round(due, 2);
             serializer.validated_data['cash_collection_date_time'] = datetime.now(tz_Dhaka)
         elif request.data.get('type') == "return":
             serializer.validated_data['return_date_time'] = datetime.now(tz_Dhaka)
