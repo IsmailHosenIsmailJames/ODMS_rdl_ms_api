@@ -221,7 +221,39 @@ def delivery_list(request,sap_id):
 def delivery_save(request):
     if request.method == 'POST':
         tz_Dhaka = pytz.timezone('Asia/Dhaka')
-        serializer = DeliverySerializer(data=request.data, partial=True)
+        productList = []
+        for item in request.data['deliverys']:
+            productList.append({
+                "batch": item["batch"],
+                "delivery_net_val": round(item["delivery_net_val"],2),
+                "delivery_quantity": item["delivery_quantity"],
+                "matnr": item["matnr"],
+                "net_val": round(item["net_val"],2),
+                "quantity": item["quantity"],
+                "return_net_val": round(item["return_net_val"],2),
+                "return_quantity": item["return_quantity"],
+                "tp": item["tp"],
+                "vat": item["vat"],
+            })
+        main_data = {
+            "billing_date": request.data['billing_date'],
+            "billing_doc_no": request.data['billing_doc_no'],
+            "cash_collection": request.data['cash_collection'],
+            "da_code": request.data['da_code'],
+            "delivery_latitude": request.data['delivery_latitude'],
+            "delivery_longitude": request.data['delivery_longitude'],
+            "delivery_status": request.data['delivery_status'],
+            "gate_pass_no": request.data['gate_pass_no'],
+            "last_status": request.data['last_status'],
+            "partner": request.data['partner'],
+            "route_code": request.data['route_code'],
+            "transport_type": request.data['transport_type'],
+            "type": request.data['type'],
+            "vehicle_no": request.data['vehicle_no'],
+            "deliverys": productList,
+        }
+
+        serializer = DeliverySerializer(data=main_data, partial=True)
         if serializer.is_valid():
             if request.data.get('type') == "delivery":
                 serializer.validated_data['delivery_date_time'] = datetime.now(tz_Dhaka)
@@ -231,4 +263,5 @@ def delivery_save(request):
                 serializer.validated_data['return_date_time'] = datetime.now(tz_Dhaka)
             serializer.save()
             return Response({"success": True, "result": serializer.data}, status=status.HTTP_200_OK)
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
