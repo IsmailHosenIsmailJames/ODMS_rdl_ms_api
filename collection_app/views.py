@@ -259,7 +259,7 @@ def cash_collection_save(request, pk):
     tz_Dhaka = pytz.timezone('Asia/Dhaka')
     serializer = DeliverySerializer(delivery, data=request.data, partial=True)
     if serializer.is_valid():
-        sql = "SELECT SUM(net_val) net_val FROM rpl_sales_info_sap sis WHERE sis.billing_doc_no = %s;"
+        sql = "SELECT SUM(net_val+vat) net_val FROM rpl_sales_info_sap sis WHERE sis.billing_doc_no = %s;"
         billing_doc_no = request.data.get('billing_doc_no')
         result = execute_raw_query(sql,[billing_doc_no])
         serializer.validated_data['net_val']=round(result[0][0],2);
@@ -274,5 +274,5 @@ def cash_collection_save(request, pk):
         serializer.update(delivery, serializer.validated_data)
         
         return Response({"success": True, "result": serializer.data}, status=status.HTTP_200_OK)
-    
+    print(serializer.errors)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
