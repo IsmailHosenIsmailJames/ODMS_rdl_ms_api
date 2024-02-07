@@ -15,15 +15,15 @@ def execute_raw_query(query, params=None):
 def dashboard_report(request,sap_id):
     if request.method == 'GET':
         sql= "SELECT " \
-	            "COALESCE((SELECT COUNT(DISTINCT dis.billing_doc_no) c FROM rdl_delivery_info_sap dis WHERE dis.billing_date = CURRENT_DATE() AND dis.da_code = '%s')) total_delivary," \
-	            "COALESCE((SELECT COUNT(*) c FROM rdl_delivery d WHERE d.billing_date = CURRENT_DATE() AND d.da_code = '%s')) total_delivary_done, " \
-	            "COALESCE((SELECT COUNT(*) c FROM rdl_delivery d WHERE d.billing_date = CURRENT_DATE() AND d.da_code = '%s' AND delivery_status = 'Done' AND cash_collection_status IS NULL)) total_collection, " \
-                "COALESCE((SELECT COUNT(*) c FROM rdl_delivery d WHERE d.billing_date = CURRENT_DATE() AND d.da_code = '%s' AND cash_collection_status = 'Done')) total_collection_done, " \
-                "COALESCE((SELECT SUM(sis.net_val) c FROM rdl_delivery_info_sap dis INNER JOIN rpl_sales_info_sap sis ON dis.billing_doc_no=sis.billing_doc_no WHERE dis.billing_date = CURRENT_DATE() AND dis.da_code = '%s')) total_gate_pass_amount," \
-	            "COALESCE((SELECT SUM(d.cash_collection) c FROM rdl_delivery d WHERE d.billing_date = CURRENT_DATE() AND d.da_code = '%s' AND delivery_status = 'Done' AND cash_collection_status = 'Done')) total_collection_amount," \
-	            "COALESCE((SELECT SUM(dl.return_net_val) c FROM rdl_delivery d INNER JOIN rdl_delivery_list dl ON d.id=dl.delivery_id WHERE d.billing_date = CURRENT_DATE() AND d.da_code = '%s' AND d.delivery_status = 'Done' AND dl.return_net_val IS NOT NULL)) total_return_amount," \
-	            "COALESCE((SELECT SUM(dl.return_quantity) c FROM rdl_delivery d INNER JOIN rdl_delivery_list dl ON d.id=dl.delivery_id WHERE d.billing_date = CURRENT_DATE() AND d.da_code = '%s' AND d.delivery_status = 'Done' AND dl.return_quantity IS NOT NULL)) total_return_quantity," \
-                "COALESCE((SELECT (SUM(sis.net_val) - SUM(DISTINCT d.cash_collection)) c FROM rdl_delivery d INNER JOIN rpl_sales_info_sap sis ON d.billing_doc_no=sis.billing_doc_no WHERE d.billing_date = CURRENT_DATE() AND d.da_code = '%s' AND d.delivery_status = 'Done' AND d.cash_collection_status = 'Done')) total_due;"
+	            "(SELECT COUNT(DISTINCT dis.billing_doc_no) c FROM rdl_delivery_info_sap dis WHERE dis.billing_date = CURRENT_DATE() AND dis.da_code = '%s') total_delivary," \
+	            "(SELECT COUNT(*) c FROM rdl_delivery d WHERE d.billing_date = CURRENT_DATE() AND d.da_code = '%s') total_delivary_done, " \
+	            "(SELECT COUNT(*) c FROM rdl_delivery d WHERE d.billing_date = CURRENT_DATE() AND d.da_code = '%s' AND delivery_status = 'Done' AND cash_collection_status IS NULL) total_collection, " \
+                "(SELECT COUNT(*) c FROM rdl_delivery d WHERE d.billing_date = CURRENT_DATE() AND d.da_code = '%s' AND cash_collection_status = 'Done') total_collection_done, " \
+                "(SELECT SUM(sis.net_val) c FROM rdl_delivery_info_sap dis INNER JOIN rpl_sales_info_sap sis ON dis.billing_doc_no=sis.billing_doc_no WHERE dis.billing_date = CURRENT_DATE() AND dis.da_code = '%s') total_gate_pass_amount," \
+	            "(SELECT SUM(d.cash_collection) c FROM rdl_delivery d WHERE d.billing_date = CURRENT_DATE() AND d.da_code = '%s' AND delivery_status = 'Done' AND cash_collection_status = 'Done') total_collection_amount," \
+	            "(SELECT SUM(dl.return_net_val) c FROM rdl_delivery d INNER JOIN rdl_delivery_list dl ON d.id=dl.delivery_id WHERE d.billing_date = CURRENT_DATE() AND d.da_code = '%s' AND d.delivery_status = 'Done' AND dl.return_net_val IS NOT NULL) total_return_amount," \
+	            "(SELECT SUM(dl.return_quantity) c FROM rdl_delivery d INNER JOIN rdl_delivery_list dl ON d.id=dl.delivery_id WHERE d.billing_date = CURRENT_DATE() AND d.da_code = '%s' AND d.delivery_status = 'Done' AND dl.return_quantity IS NOT NULL) total_return_quantity," \
+                "(SELECT (SUM(sis.net_val) - SUM(DISTINCT d.cash_collection)) c FROM rdl_delivery d INNER JOIN rpl_sales_info_sap sis ON d.billing_doc_no=sis.billing_doc_no WHERE d.billing_date = CURRENT_DATE() AND d.da_code = '%s' AND d.delivery_status = 'Done' AND d.cash_collection_status = 'Done') total_due;"
 	            
         
         # sql= "SELECT " \
