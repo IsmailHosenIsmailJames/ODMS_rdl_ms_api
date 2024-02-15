@@ -24,8 +24,6 @@ class UserList(models.Model):
         verbose_name = "RDL User List"
         verbose_name_plural = "RDL User List"
 
-
-
 class AdminUserList(models.Model):
     id = models.AutoField(primary_key=True)
     user_name = models.CharField(max_length=255,null=False,unique=True)

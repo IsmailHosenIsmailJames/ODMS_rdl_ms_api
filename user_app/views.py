@@ -32,6 +32,16 @@ def get_start_work_details(sap_id):
         return AttendanceModel.objects.raw("SELECT * FROM rdl_attendance WHERE sap_id=%s AND DATE_FORMAT(start_date_time, '%%Y-%%m-%%d') = CURDATE()",[sap_id])[0]
     except:
         return None
+    
+@api_view(['GET'])
+def user_list(request):
+    if request.method == 'GET':
+        user_list = UserList.objects.all()
+        if user_list.exists():
+            serializer = UserDetailsSerializer(user_list, many=True)
+            return Response({"success": True, "result": serializer.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({"success": False, "message": 'Your user list is not available'}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['POST'])
 def user_admin_login(request):
