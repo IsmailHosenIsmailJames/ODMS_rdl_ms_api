@@ -1,6 +1,7 @@
 from django.db import models
 
 class UserList(models.Model):
+    id = models.IntegerField(null=False)
     sap_id = models.IntegerField(null=False,primary_key=True)
     full_name = models.CharField(max_length=255,null=False)
     mobile_number = models.CharField(max_length=255,null=False)
