@@ -11,6 +11,23 @@ def execute_raw_query(query, params=None):
         results = cursor.fetchall()
     return results
 
+def execute_raw_query_v1(sql, params):
+    with connection.cursor() as cursor:
+        cursor.execute(sql, params)
+        columns = [col[0] for col in cursor.description]
+        return [
+            dict(zip(columns, row))
+            for row in cursor.fetchall()
+        ]
+    
+@api_view(['GET'])
+def activity_for_map(request,sap_id,date):
+    if request.method == 'GET':
+        sql = "SELECT * FROM rdl_delivery WHERE da_code = %s AND created_at LIKE %s;"
+        params = [sap_id, f"{date}%"]
+        result = execute_raw_query_v1(sql, params)
+        return Response({"success": True, "result": result}, status=status.HTTP_200_OK)
+    
 @api_view(['GET'])
 def dashboard_report(request,sap_id):
     if request.method == 'GET':
