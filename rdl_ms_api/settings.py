@@ -96,8 +96,8 @@ DATABASES = {
         'NAME': 'odms_db',
         'USER': 'root',
         'PASSWORD': '&j}HS9L02z',
-        'HOST': '127.0.0.1',
-        # 'HOST': '174.138.120.140',
+        # 'HOST': '127.0.0.1',
+        'HOST': '174.138.120.140',
         'PORT': '3306',
         "TIME_ZONE": "Asia/Dhaka"
     }
