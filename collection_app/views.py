@@ -21,6 +21,10 @@ def execute_raw_query(query, params=None):
 def cash_collection_list_v2(request,sap_id):
     if request.method == 'GET':
         d_type = request.query_params.get("type")
+        date = request.query_params.get("date")
+        query_date = " AND dis.billing_date = CURRENT_DATE() "
+        if date != "":
+            query_date = " AND dis.billing_date = '"+date+"' "
         query = " AND d.delivery_status = 'Done' "
         if d_type == 'All':
             query = query
@@ -50,7 +54,7 @@ def cash_collection_list_v2(request,sap_id):
                 "LEFT JOIN (SELECT DISTINCT customer_id, latitude, longitude FROM exf_customer_location LIMIT 1) cl ON sis.partner = cl.customer_id " \
                 "LEFT JOIN rdl_delivery d ON sis.billing_doc_no=d.billing_doc_no " \
                 "LEFT JOIN rdl_delivery_list dl ON d.id=dl.delivery_id AND sis.matnr=dl.matnr " \
-                "WHERE dis.billing_date = CURRENT_DATE() AND dis.da_code = '%s' "+query+" ;"
+                "WHERE dis.da_code = '%s' "+query_date+query+" ;"
         
         data_list = DeliveryInfoModel.objects.raw(sql,[sap_id])
         if len(data_list) == 0:
