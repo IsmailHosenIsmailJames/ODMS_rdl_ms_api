@@ -8,6 +8,7 @@ from rest_framework.decorators import api_view
 from datetime import datetime
 import pytz
 from django.db.models import Q
+from datetime import datetime, time
 
 def get_start_work_details(sap_id):
     try:
@@ -30,7 +31,17 @@ def attendance_start_work(request):
         if start_work_details == None:
             serializer = AttendanceInputSerializer(data=request.data)
             if serializer.is_valid():
+                current_time = datetime.now(tz_Dhaka)
+                last_allowed_time = time(9, 10)  # 09:10 AM
+
+                # Calculate late time if the current time exceeds the allowed time
+                if current_time.time() > last_allowed_time:
+                    late_time_min = (current_time.hour - 9) * 60 + (current_time.minute - 10)
+                else:
+                    late_time_min = 0
+                    
                 serializer.validated_data['start_date_time'] = datetime.now(tz_Dhaka)
+                serializer.validated_data['late_time_min'] = late_time_min
                 serializer.save()
                 return Response({"success": True, "result": serializer.data}, status=status.HTTP_200_OK)
             return Response({"success": False, "message": serializer.errors}, status=status.HTTP_200_OK)
