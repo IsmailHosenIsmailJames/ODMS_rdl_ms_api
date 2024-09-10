@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class PharmaceuticalsLocationConfig(AppConfig):
+class CustomerLocationAppConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'pharmaceuticals_location'
+    name = 'customer_location_app'
