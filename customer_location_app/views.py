@@ -1,7 +1,6 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from django.core.paginator import Paginator
 from django.db import connection
 
 @api_view(['GET'])
@@ -18,10 +17,29 @@ def customer_list(request):
         if search_partner:
             sql_query += f" AND partner LIKE '%%{search_partner}%%'"
 
-        # Execute the raw query
+        # Get pagination parameters (page and limit)
+        page = int(request.GET.get('page', 1))
+        limit = int(request.GET.get('limit', 10))
+        offset = (page - 1) * limit
+
+        # Append LIMIT and OFFSET to the query for pagination
+        sql_query += f" LIMIT {limit} OFFSET {offset}"
+
+        # Execute the raw query to fetch the customers with pagination
         with connection.cursor() as cursor:
             cursor.execute(sql_query)
             customers = cursor.fetchall()
+
+        # Fetch total number of customers for pagination purposes
+        total_query = "SELECT COUNT(*) FROM rpl_customer WHERE 1=1"
+        if search_name:
+            total_query += f" AND name1 LIKE '%%{search_name}%%'"
+        if search_partner:
+            total_query += f" AND partner LIKE '%%{search_partner}%%'"
+
+        with connection.cursor() as cursor:
+            cursor.execute(total_query)
+            total_customers = cursor.fetchone()[0]
 
         # Convert raw SQL data to a list of dictionaries
         columns = [
@@ -34,19 +52,14 @@ def customer_list(request):
             dict(zip(columns, customer)) for customer in customers
         ]
 
-        # Apply pagination
-        page = request.GET.get('page', 1)
-        paginator = Paginator(customer_list, 10)  # Show 10 customers per page
-        try:
-            customers_page = paginator.page(page)
-        except:
-            return Response({"success": False, "error": "Invalid page number"}, status=status.HTTP_400_BAD_REQUEST)
+        # Calculate the total number of pages
+        total_pages = (total_customers + limit - 1) // limit
 
         # Prepare response data
         return Response({
             "success": True,
-            "total_customers": paginator.count,
-            "total_pages": paginator.num_pages,
-            "current_page": customers_page.number,
-            "results": customers_page.object_list
+            "total_customers": total_customers,
+            "total_pages": total_pages,
+            "current_page": page,
+            "results": customer_list
         }, status=status.HTTP_200_OK)
