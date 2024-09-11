@@ -4,6 +4,43 @@ from rest_framework import status
 from django.db import connection
 
 @api_view(['GET'])
+def customer_details(request, partner):
+    if request.method == 'GET':
+        try:
+            with connection.cursor() as cursor:
+                # Raw SQL query with LIMIT 1
+                cursor.execute("""
+                    SELECT c.*, cl.latitude, cl.longitude 
+                    FROM rpl_customer c 
+                    LEFT JOIN exf_customer_location cl 
+                    ON cl.customer_id = c.partner 
+                    WHERE c.partner = %s 
+                    LIMIT 1
+                """, [partner])
+                
+                # Fetch a single row from the executed query
+                row = cursor.fetchone()
+                
+                if row:
+                    # Get column names
+                    columns = [col[0] for col in cursor.description]
+                    
+                    # Convert the row into a dictionary
+                    result = dict(zip(columns, row))
+                else:
+                    result = None
+
+            return Response({
+                "success": True,
+                "result": result
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({
+                "success": False,
+                "error": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(['GET'])
 def customer_list(request):
     if request.method == 'GET':
         # Base SQL query
