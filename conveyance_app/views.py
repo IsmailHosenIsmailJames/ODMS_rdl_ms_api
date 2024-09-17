@@ -20,11 +20,22 @@ class TransportModeListView(APIView):
 # Conveyance List (Today or filter by date)
 class ConveyanceListView(APIView):
     def get(self, request, *args, **kwargs):
+        # Get the 'date' and 'da_code' from the query parameters
         date_filter = request.GET.get('date', timezone.now().date())
+        da_code = request.GET.get('da_code')
+        
+        # Ensure da_code is provided, if not, return an error response
+        if not da_code:
+            return Response({"success": False, "message": "da_code is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Filter conveyances by date and da_code
         conveyances = ConveyanceModel.objects.filter(
-            Q(start_journey_date_time__date=date_filter)
+            Q(start_journey_date_time__date=date_filter) & Q(da_code=da_code)
         )
+        
+        # Serialize the result
         serializer = ConveyanceSerializer(conveyances, many=True)
+        
         return Response({"success": True, "result": serializer.data}, status=status.HTTP_200_OK)
 
 # Start Journey
