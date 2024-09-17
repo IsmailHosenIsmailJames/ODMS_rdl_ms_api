@@ -6,6 +6,8 @@ class ConveyanceModel(models.Model):
     id = models.AutoField(primary_key=True)
     da_code = models.CharField(max_length=100)
     start_journey_latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    start_journey_longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    end_journey_latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     end_journey_longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     start_journey_date_time = models.DateTimeField()
     end_journey_date_time = models.DateTimeField(null=True, blank=True)
