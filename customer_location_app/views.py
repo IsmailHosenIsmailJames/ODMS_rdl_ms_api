@@ -2,6 +2,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from django.db import connection
+from .models import CustomerLocationModel
+from .serializers import CustomerLocationSerializer
 
 @api_view(['GET'])
 def customer_details(request, partner):
@@ -100,3 +102,21 @@ def customer_list(request):
             "current_page": page,
             "results": customer_list
         }, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def update_or_insert_customer_location(request):
+    customer_id = request.data.get('customer_id')
+    
+    if not customer_id:
+        return Response({"success": False, "message": "customer_id is required"}, status=status.HTTP_200_OK)
+    
+    try:
+        customer_location = CustomerLocationModel.objects.get(customer_id=customer_id)
+        serializer = CustomerLocationSerializer(customer_location, data=request.data, partial=True)
+    except CustomerLocationModel.DoesNotExist:
+        serializer = CustomerLocationSerializer(data=request.data)
+    
+    if serializer.is_valid():
+        serializer.save()
+        return Response({"success": True, "result": serializer.data}, status=status.HTTP_200_OK)
+    return Response({"success": False, "message": serializer.errors}, status=status.HTTP_200_OK)

@@ -60,6 +60,7 @@ class EndJourneyView(APIView):
             return Response({"success": False, "message": "Journey not found"}, status=status.HTTP_200_OK)
         
         data = request.data
+        conveyance.end_journey_latitude = data.get('end_journey_latitude')
         conveyance.end_journey_longitude = data.get('end_journey_longitude')
         conveyance.end_journey_date_time = timezone.now()  # Auto set current time for end
         conveyance.transport_mode = data.get('transport_mode')
