@@ -14,7 +14,7 @@ def customer_details(request, partner):
                 cursor.execute("""
                     SELECT c.*, cl.latitude, cl.longitude 
                     FROM rpl_customer c 
-                    LEFT JOIN exf_customer_location cl 
+                    LEFT JOIN rdl_customer_location cl 
                     ON cl.customer_id = c.partner 
                     WHERE c.partner = %s 
                     LIMIT 1

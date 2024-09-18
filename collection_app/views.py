@@ -51,7 +51,7 @@ def cash_collection_list_v2(request,sap_id):
                 "INNER JOIN rpl_sales_info_sap sis ON dis.billing_doc_no=sis.billing_doc_no " \
                 "INNER JOIN rpl_material m ON sis.matnr=m.matnr " \
                 "INNER JOIN rpl_customer c ON sis.partner=c.partner " \
-                "LEFT JOIN (SELECT DISTINCT customer_id, latitude, longitude FROM exf_customer_location LIMIT 1) cl ON sis.partner = cl.customer_id " \
+                "LEFT JOIN (SELECT DISTINCT customer_id, latitude, longitude FROM rdl_customer_location LIMIT 1) cl ON sis.partner = cl.customer_id " \
                 "LEFT JOIN rdl_delivery d ON sis.billing_doc_no=d.billing_doc_no " \
                 "LEFT JOIN rdl_delivery_list dl ON d.id=dl.delivery_id AND sis.matnr=dl.matnr " \
                 "WHERE dis.da_code = '%s' "+query_date+query+" ;"
@@ -179,7 +179,7 @@ def cash_collection_list(request,sap_id):
                 "INNER JOIN rpl_sales_info_sap sis ON dis.billing_doc_no=sis.billing_doc_no " \
                 "INNER JOIN rpl_material m ON sis.matnr=m.matnr " \
                 "INNER JOIN rpl_customer c ON sis.partner=c.partner " \
-                "LEFT JOIN (SELECT DISTINCT customer_id, latitude, longitude FROM exf_customer_location LIMIT 1) cl ON sis.partner = cl.customer_id" \
+                "LEFT JOIN (SELECT DISTINCT customer_id, latitude, longitude FROM rdl_customer_location LIMIT 1) cl ON sis.partner = cl.customer_id" \
                 "LEFT JOIN rdl_delivery d ON sis.billing_doc_no=d.billing_doc_no " \
                 "LEFT JOIN rdl_delivery_list dl ON d.id=dl.delivery_id AND sis.matnr=dl.matnr " \
                 "WHERE dis.billing_date = CURRENT_DATE() AND dis.da_code = '%s' "+query+" ;"
