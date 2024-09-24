@@ -12,6 +12,7 @@ from datetime import datetime
 from django.db import connection
 from django.utils import timezone
 from .models import PaymentHistory
+from decimal import Decimal
 
 def execute_raw_query(query, params=None):
     with connection.cursor() as cursor:
@@ -432,3 +433,25 @@ def cash_overdue(request,da_code):
                 })
 
         return Response({"success": True, "result": customer_data}, status=status.HTTP_200_OK)
+    
+@api_view(['PUT'])
+def collect_overdue(request):
+    if request.method == 'PUT':
+        data = request.data
+        billing_doc_no=data.get('billing_doc_no')
+        da_code=data.get('da_code')
+        cash_collection = Decimal(str(data.get('cash_collection', '0')))
+        cash_collection_latitude=data.get('cash_collection_latitude')
+        cash_collection_longitude=data.get('cash_collection_longitude')
+        print(cash_collection,billing_doc_no,da_code)
+        try:
+            delivery = DeliveryModel.objects.get(billing_doc_no=billing_doc_no)
+        except DeliveryModel.DoesNotExist:
+            return Response({"error": "Delivery not found"}, status=status.HTTP_404_NOT_FOUND)
+        # - from due_amount, + with cash_collection
+        if delivery.due_amount:
+            delivery.due_amount =Decimal('0.00') if delivery.due_amount-cash_collection<Decimal('0.00') else round(delivery.due_amount-cash_collection,2)
+        delivery.cash_collection+=cash_collection
+        delivery.save()
+        return Response({"success": True, "result":data}, status=status.HTTP_200_OK)
+    return Response({'success':'wrong method'})
