@@ -10,6 +10,7 @@ from delivery_app.models import DeliveryInfoModel, DeliveryModel
 from delivery_app.serializers import DeliverySerializer
 from datetime import datetime
 from django.db import connection
+from django.utils import timezone
 
 def execute_raw_query(query, params=None):
     with connection.cursor() as cursor:
@@ -280,3 +281,49 @@ def cash_collection_save(request, pk):
         return Response({"success": True, "result": serializer.data}, status=status.HTTP_200_OK)
     print(serializer.errors)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+def get_da_route(da_code):
+    sql="SELECT billing_doc_no,route FROM rdl_delivery_info_sap WHERE da_code='%s' ORDER BY billing_date DESC LIMIT 1"
+    data=DeliveryInfoModel.objects.raw(sql,[da_code])
+    data_list=list(data)
+    if data_list:
+        route = data_list[0].route
+        return route
+    return None
+    
+@api_view(['GET'])
+def cash_overdue(request,da_code):
+    route=get_da_route(da_code)
+    start_date = request.query_params.get("start_date")
+    end_date = request.query_params.get("end_date")
+    partner=request.query_params.get("partner")
+    current_date = timezone.now().date()
+    sql=f"SELECT * FROM rdl_delivery WHERE route_code={route} AND due_amount != 0"
+    if start_date!=" " and start_date!=None:
+        print("date block")
+        sql += f" AND billing_date BETWEEN {start_date}"
+        if end_date:
+            sql += f" AND {end_date}"
+        else:
+            sql += f" AND {current_date}"
+            
+    if partner:
+        sql += f" AND partner={partner}"
+    print(partner)
+    print(f'start date {start_date}   end date {end_date}   current date {current_date}')
+    print(sql)
+    data_list=DeliveryModel.objects.raw(sql)
+    data=[]
+    for d in data_list:
+        data.append({
+            "billing_doc_no": d.billing_doc_no,
+            "da_code": d.da_code,
+            "partner": d.partner,
+            "delivery_status": d.delivery_status,
+            "delivery_date_time": d.delivery_date_time,
+            "cash_collection": d.cash_collection,
+            "cash_collection_status": d.cash_collection_status,
+            "net_val":d.net_val,
+            "due_amount": d.due_amount
+        })
+    return Response({"sucess":True,"result":data},status=status.HTTP_200_OK)
