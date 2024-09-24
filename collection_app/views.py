@@ -291,6 +291,7 @@ def get_da_route(da_code):
         return route
     return None
 
+@api_view(['GET'])
 def cash_overdue(request,da_code):
     if request.method == 'GET':
         route=get_da_route(da_code)
@@ -299,7 +300,7 @@ def cash_overdue(request,da_code):
         partner=request.query_params.get("partner")
         current_date = timezone.now().date()
 
-        sql = f"SELECT dis.*,IFNULL(rs.description, 'No Route Name') AS route_name, " \
+        sql = "SELECT dis.*,IFNULL(rs.description, 'No Route Name') AS route_name, " \
                 "sis.billing_type,sis.partner,sis.matnr,sis.quantity,sis.tp,sis.vat,sis.net_val,sis.assigment,sis.gate_pass_no,sis.batch,sis.plant,sis.team,sis.created_on, " \
                 "m.material_name,m.brand_description,m.brand_name, " \
                 "CONCAT(c.name1,c.name2) customer_name,CONCAT(c.street,c.street1,c.street2) customer_address,c.mobile_no customer_mobile, " \
@@ -314,7 +315,7 @@ def cash_overdue(request,da_code):
                 "LEFT JOIN (SELECT DISTINCT customer_id, latitude, longitude FROM rdl_customer_location LIMIT 1) cl ON sis.partner = cl.customer_id " \
                 "LEFT JOIN rdl_delivery d ON sis.billing_doc_no=d.billing_doc_no " \
                 "LEFT JOIN rdl_delivery_list dl ON d.id=dl.delivery_id AND sis.matnr=dl.matnr " \
-                "WHERE d.route_code = {route} AND d.due_amount != 0"
+                "WHERE d.route_code = %s AND d.due_amount != 0"
         
         if start_date!=" " and start_date!=None:
             sql += f" AND billing_date BETWEEN {start_date}"
@@ -323,9 +324,8 @@ def cash_overdue(request,da_code):
             else:
                 sql += f" AND {current_date}"
         if partner:
-            sql += f" AND partner={partner}"
-        
-        data_list = DeliveryInfoModel.objects.raw(sql)
+            sql += f" AND d.partner={partner}"
+        data_list = DeliveryInfoModel.objects.raw(sql,[route])
         if len(data_list) == 0:
             return Response({"success": False, "message": "Data not available!"}, status=status.HTTP_200_OK)
         else:
