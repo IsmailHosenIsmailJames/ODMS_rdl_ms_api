@@ -24,7 +24,7 @@ class CashCollectionInfoModel(models.Model):
 
 class PaymentHistory(models.Model):
     id = models.AutoField(primary_key=True)
-    billing_doc_no=models.CharField(unique=True, max_length=10,null=False)
+    billing_doc_no=models.CharField(max_length=10,null=False)
     partner=models.CharField(max_length=10,null=False)
     da_code=models.CharField(max_length=10,null=False)
     route_code=models.CharField(max_length=6,null=True)
