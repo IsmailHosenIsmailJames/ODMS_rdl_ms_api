@@ -27,6 +27,7 @@ class PaymentHistory(models.Model):
     billing_doc_no=models.CharField(unique=True, max_length=10,null=False)
     partner=models.CharField(max_length=10,null=False)
     da_code=models.CharField(max_length=10,null=False)
+    route_code=models.CharField(max_length=6,null=True)
     cash_collection=models.DecimalField(max_digits=8, decimal_places=2,null=True, default=0.00)
     cash_collection_date_time=models.DateTimeField(null=True,blank=True)
     cash_collection_latitude=models.DecimalField(max_digits=27, decimal_places=16,null=True)
