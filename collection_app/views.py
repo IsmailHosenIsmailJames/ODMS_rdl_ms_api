@@ -278,19 +278,7 @@ def cash_collection_save(request, pk):
             serializer.validated_data['due_amount']=round(due, 2);
             serializer.validated_data['cash_collection_date_time'] = datetime.now(tz_Dhaka)
             # Create Payment History Object
-            try:
-                payment_history = PaymentHistory.objects.get(billing_doc_no=billing_doc_no)
-            except PaymentHistory.DoesNotExist:
-                PaymentHistory.objects.create(
-                    billing_doc_no=billing_doc_no,
-                    partner=delivery.partner, 
-                    da_code=delivery.da_code,
-                    route_code=delivery.route_code,
-                    cash_collection=cash_collection,
-                    cash_collection_date_time=datetime.now(tz_Dhaka),
-                    cash_collection_latitude=request.data.get('cash_collection_latitude', None),
-                    cash_collection_longitude=request.data.get('cash_collection_longitude', None)
-                )
+            CreatePaymentHistoryObject(billing_doc_no=billing_doc_no,partner=delivery.partner,da_code=delivery.da_code,route_code=delivery.route_code,cash_collection=cash_collection,cash_collection_date_time=datetime.now(tz_Dhaka),cash_collection_latitude=request.data.get('cash_collection_latitude', None),cash_collection_longitude=request.data.get('cash_collection_latitude', None))
         
         elif request.data.get('type') == "return":
             serializer.validated_data['return_date_time'] = datetime.now(tz_Dhaka)
