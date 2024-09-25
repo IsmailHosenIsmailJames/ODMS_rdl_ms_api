@@ -274,6 +274,8 @@ def cash_collection_save(request, pk):
         serializer.validated_data['net_val']=round(result[0][0],2);
         if request.data.get('type') == "cash_collection":
             cash_collection = request.data.get('cash_collection')
+            if cash_collection>delivery.net_val:
+                return Response({"success":False,"message":"Cash collection exceed the net value"},status=status.HTTP_400_BAD_REQUEST)
             due = float(result[0][0]) - float(cash_collection)
             serializer.validated_data['due_amount']=round(due, 2);
             serializer.validated_data['cash_collection_date_time'] = datetime.now(tz_Dhaka)
@@ -437,9 +439,9 @@ def collect_overdue(request):
         try:
             delivery = DeliveryModel.objects.get(billing_doc_no=billing_doc_no)
         except DeliveryModel.DoesNotExist:
-            return Response({"error": "Delivery not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"success":False,"message":"Delivery not found"}, status=status.HTTP_404_NOT_FOUND)
         if cash_collection>delivery.due_amount:
-            return Response({"error":"Cash collection exceed the due amount"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"success":False,"message":"Cash collection exceed the due amount"}, status=status.HTTP_400_BAD_REQUEST)
         # if delivery.due_amount:
         #     delivery.due_amount =Decimal('0.00') if delivery.due_amount-cash_collection<Decimal('0.00') else round(delivery.due_amount-cash_collection,2)
         delivery.due_amount =round(delivery.due_amount-cash_collection,2)
