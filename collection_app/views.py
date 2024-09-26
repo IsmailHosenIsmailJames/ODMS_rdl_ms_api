@@ -437,14 +437,14 @@ def collect_overdue(request):
         try:
             delivery = DeliveryModel.objects.get(billing_doc_no=billing_doc_no)
         except DeliveryModel.DoesNotExist:
-            return Response({"error": "Delivery not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"success":False,"message": "Delivery not found"}, status=status.HTTP_200_OK)
         if cash_collection>delivery.due_amount:
-            return Response({"error":"Cash collection exceed the due amount"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"success":False,"message":"Cash collection exceed the due amount"}, status=status.HTTP_200_OK)
         # if delivery.due_amount:
         #     delivery.due_amount =Decimal('0.00') if delivery.due_amount-cash_collection<Decimal('0.00') else round(delivery.due_amount-cash_collection,2)
         delivery.due_amount =round(delivery.due_amount-cash_collection,2)
         delivery.cash_collection+=cash_collection
         delivery.save()
         CreatePaymentHistoryObject(billing_doc_no=billing_doc_no,partner=delivery.partner,da_code=da_code,route_code=delivery.route_code,cash_collection=cash_collection,cash_collection_date_time=datetime.now(tz_Dhaka),cash_collection_latitude=cash_collection_latitude,cash_collection_longitude=cash_collection_longitude)
-        return Response({"success": True, "result":data}, status=status.HTTP_200_OK)
-    return Response({'success':'wrong method'})
+        return Response({"success": True,"message":"successfully collect overdue", "result":data}, status=status.HTTP_200_OK)
+    return Response({"success":False,"message":'wrong method'},status=status.HTTP_200_OK)
