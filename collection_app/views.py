@@ -277,14 +277,12 @@ def cash_collection_save(request, pk):
             # if cash_collection>delivery.net_val:
             #     return Response({"success":False,"message":"Cash collection exceed the net value"},status=status.HTTP_400_BAD_REQUEST)
             delivery_items=request.data.get('deliverys',[])
-            # print(delivery_items,'delivery items')
             return_values=[]
             return_amount=0.00
             for items in delivery_items:
                 return_amount+=float(items['return_net_val'])
                 return_values.append(items['return_net_val'])
-                # print(items)
-            # print(return_values,'return values')
+
             print('return amount is: ',return_amount)
             if return_amount>0.00:
                 serializer.validated_data['return_status']=1
