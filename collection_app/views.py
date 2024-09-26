@@ -274,8 +274,8 @@ def cash_collection_save(request, pk):
         serializer.validated_data['net_val']=round(result[0][0],2);
         if request.data.get('type') == "cash_collection":
             cash_collection = request.data.get('cash_collection')
-            if cash_collection>delivery.net_val:
-                return Response({"success":False,"message":"Cash collection exceed the net value"},status=status.HTTP_400_BAD_REQUEST)
+            # if cash_collection>delivery.net_val:
+            #     return Response({"success":False,"message":"Cash collection exceed the net value"},status=status.HTTP_400_BAD_REQUEST)
             delivery_items=request.data.get('deliverys',[])
             # print(delivery_items,'delivery items')
             return_values=[]
