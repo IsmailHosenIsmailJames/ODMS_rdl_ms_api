@@ -13,7 +13,7 @@ from django.db import connection
 from django.utils import timezone
 from .models import PaymentHistory
 from decimal import Decimal
-from .utils import CreatePaymentHistoryObject
+from . import utils
 from .constants import tz_Dhaka
 
 def execute_raw_query(query, params=None):
@@ -278,7 +278,7 @@ def cash_collection_save(request, pk):
             serializer.validated_data['due_amount']=round(due, 2);
             serializer.validated_data['cash_collection_date_time'] = datetime.now(tz_Dhaka)
             # Create Payment History Object
-            CreatePaymentHistoryObject(billing_doc_no=billing_doc_no,partner=delivery.partner,da_code=delivery.da_code,route_code=delivery.route_code,cash_collection=cash_collection,cash_collection_date_time=datetime.now(tz_Dhaka),cash_collection_latitude=request.data.get('cash_collection_latitude', None),cash_collection_longitude=request.data.get('cash_collection_latitude', None))
+            utils.CreatePaymentHistoryObject(billing_doc_no=billing_doc_no,partner=delivery.partner,da_code=delivery.da_code,route_code=delivery.route_code,cash_collection=cash_collection,cash_collection_date_time=datetime.now(tz_Dhaka),cash_collection_latitude=request.data.get('cash_collection_latitude', None),cash_collection_longitude=request.data.get('cash_collection_latitude', None))
         
         elif request.data.get('type') == "return":
             serializer.validated_data['return_date_time'] = datetime.now(tz_Dhaka)
@@ -289,19 +289,10 @@ def cash_collection_save(request, pk):
     print(serializer.errors)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-def get_da_route(da_code):
-    sql="SELECT billing_doc_no,route FROM rdl_delivery_info_sap WHERE da_code='%s' ORDER BY billing_date DESC LIMIT 1"
-    data=DeliveryInfoModel.objects.raw(sql,[da_code])
-    data_list=list(data)
-    if data_list:
-        route = data_list[0].route
-        return route
-    return None
-
 @api_view(['GET'])
 def cash_overdue(request,da_code):
     if request.method == 'GET':
-        route=get_da_route(da_code)
+        route=utils.get_da_route(da_code)
         start_date = request.query_params.get("start_date")
         end_date = request.query_params.get("end_date")
         partner=request.query_params.get("partner")
@@ -445,6 +436,6 @@ def collect_overdue(request):
         delivery.due_amount =round(delivery.due_amount-cash_collection,2)
         delivery.cash_collection+=cash_collection
         delivery.save()
-        CreatePaymentHistoryObject(billing_doc_no=billing_doc_no,partner=delivery.partner,da_code=da_code,route_code=delivery.route_code,cash_collection=cash_collection,cash_collection_date_time=datetime.now(tz_Dhaka),cash_collection_latitude=cash_collection_latitude,cash_collection_longitude=cash_collection_longitude)
+        utils.CreatePaymentHistoryObject(billing_doc_no=billing_doc_no,partner=delivery.partner,da_code=da_code,route_code=delivery.route_code,cash_collection=cash_collection,cash_collection_date_time=datetime.now(tz_Dhaka),cash_collection_latitude=cash_collection_latitude,cash_collection_longitude=cash_collection_longitude)
         return Response({"success": True,"message":"successfully collect overdue", "result":data}, status=status.HTTP_200_OK)
     return Response({"success":False,"message":'wrong method'},status=status.HTTP_200_OK)
