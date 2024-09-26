@@ -274,6 +274,8 @@ def cash_collection_save(request, pk):
         serializer.validated_data['net_val']=round(result[0][0],2);
         if request.data.get('type') == "cash_collection":
             cash_collection = request.data.get('cash_collection')
+            if cash_collection>delivery.net_val:
+                return Response({"success":False,"message":"Cash collection exceed the net value"},status=status.HTTP_400_BAD_REQUEST)
             due = float(result[0][0]) - float(cash_collection)
             serializer.validated_data['due_amount']=round(due, 2);
             serializer.validated_data['cash_collection_date_time'] = datetime.now(tz_Dhaka)
