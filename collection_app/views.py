@@ -286,6 +286,9 @@ def cash_collection_save(request, pk):
                 # print(items)
             # print(return_values,'return values')
             print('return amount is: ',return_amount)
+            if return_amount>0.00:
+                serializer.validated_data['return_status']=1
+            serializer.validated_data['return_amount']=return_amount
             due = float(result[0][0]) - float(cash_collection)-return_amount
             serializer.validated_data['due_amount']=round(due, 2);
             serializer.validated_data['cash_collection_date_time'] = datetime.now(tz_Dhaka)
