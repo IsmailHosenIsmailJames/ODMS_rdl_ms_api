@@ -276,7 +276,17 @@ def cash_collection_save(request, pk):
             cash_collection = request.data.get('cash_collection')
             if cash_collection>delivery.net_val:
                 return Response({"success":False,"message":"Cash collection exceed the net value"},status=status.HTTP_400_BAD_REQUEST)
-            due = float(result[0][0]) - float(cash_collection)
+            delivery_items=request.data.get('deliverys',[])
+            # print(delivery_items,'delivery items')
+            return_values=[]
+            return_amount=0.00
+            for items in delivery_items:
+                return_amount+=float(items['return_net_val'])
+                return_values.append(items['return_net_val'])
+                # print(items)
+            # print(return_values,'return values')
+            print('return amount is: ',return_amount)
+            due = float(result[0][0]) - float(cash_collection)-return_amount
             serializer.validated_data['due_amount']=round(due, 2);
             serializer.validated_data['cash_collection_date_time'] = datetime.now(tz_Dhaka)
             # Create Payment History Object

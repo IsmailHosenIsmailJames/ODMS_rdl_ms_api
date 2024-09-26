@@ -38,6 +38,11 @@ class DeliveryModel(models.Model):
         V1 = 'Cancel', 'Cancel'
         V2 = 'Done', 'Done'
     cash_collection_status = models.CharField(max_length=20,choices=CashCollectionStatus.choices,null=True)
+    class ReturnStatus(models.IntegerChoices):
+        v0=0,'NO'
+        v1=1,'YES'
+    return_status = models.CharField(max_length=20,choices=ReturnStatus.choices,null=True,default=0)
+    return_amount=models.DecimalField(max_digits=8,decimal_places=2,default=0.00,null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True,null=True)
     last_status = models.CharField(max_length=80,null=True)
