@@ -276,7 +276,8 @@ def cash_collection_save(request, pk):
         for result in results:
             net_val+=float(result[1]+result[3])
             unit_vat=result[1]/result[2]
-            data[result[0]]={"vat":result[1],"quantity":result[2],"net_val":result[3],"unit_vat":unit_vat}
+            unit_price=result[3]/result[2]
+            data[result[0]]={"vat":result[1],"quantity":result[2],"net_val":result[3],"unit_vat":unit_vat,"unit_price":unit_price}
             
         serializer.validated_data['net_val']=net_val
         
@@ -286,14 +287,16 @@ def cash_collection_save(request, pk):
             return_amount=0.00
             for items in delivery_items:
                 matnr=str(items['id'])
-                amount=data[matnr]['unit_vat']*items['return_quantity']
-                return_amount+=amount
+                amount=(data[matnr]['unit_vat']+data[matnr]['unit_price'])*items['return_quantity']
+                return_amount+=float(amount)
+                print(amount, matnr,data[matnr]['unit_vat'])
 
             print('return amount is: ',return_amount)
             if return_amount>0.00:
                 serializer.validated_data['return_status']=1
             serializer.validated_data['return_amount']=return_amount
             due = net_val - float(cash_collection)-return_amount
+            print(due,net_val,cash_collection,return_amount,'checking.........')
             serializer.validated_data['due_amount']=round(due, 2);
             serializer.validated_data['cash_collection_date_time'] = datetime.now(tz_Dhaka)
             # Create Payment History Object
