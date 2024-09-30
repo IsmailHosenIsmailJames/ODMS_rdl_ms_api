@@ -229,17 +229,24 @@ def delivery_save(request):
         tz_Dhaka = pytz.timezone('Asia/Dhaka')
         productList = []
         for item in request.data['deliverys']:
+            unit_vat=item["vat"]/item["quantity"]
+            unit_price=item["net_val"]/item["quantity"]
+            unit_price_with_vat=unit_vat+unit_price
+            return_amount=round(unit_price_with_vat*item["return_quantity"],2)
+            delivery_amount=round(unit_price_with_vat * item["delivery_quantity"],2)
             productList.append({
                 "batch": item["batch"],
-                "delivery_net_val": round(item["delivery_net_val"],2),
-                "delivery_quantity": item["delivery_quantity"],
-                "matnr": item["matnr"],
-                "net_val": round(item["net_val"],2),
-                "quantity": item["quantity"],
-                "return_net_val": round(item["return_net_val"],2),
-                "return_quantity": item["return_quantity"],
                 "tp": item["tp"],
                 "vat": item["vat"],
+                "net_val": round(item["net_val"],2),
+                "matnr": item["matnr"],
+                "quantity": item["quantity"],
+                
+                "delivery_quantity": item["delivery_quantity"],
+                "return_quantity": item["return_quantity"],
+                "delivery_net_val": delivery_amount,
+                "return_net_val": return_amount,
+                
             })
         main_data = {
             "billing_date": request.data['billing_date'],

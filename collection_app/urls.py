@@ -7,4 +7,5 @@ urlpatterns = [
     path('save/<str:pk>', views.cash_collection_save),
     path('overdue/list/<int:da_code>',views.cash_overdue),
     path('overdue',views.collect_overdue),
+    path('report',views.monthly_report),
 ]

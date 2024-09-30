@@ -268,26 +268,32 @@ def cash_collection_save(request, pk):
     tz_Dhaka = pytz.timezone('Asia/Dhaka')
     serializer = DeliverySerializer(delivery, data=request.data, partial=True)
     if serializer.is_valid():
-        sql = "SELECT SUM(net_val+vat) net_val FROM rpl_sales_info_sap sis WHERE sis.billing_doc_no = %s;"
+        sql = "SELECT matnr,vat,quantity,net_val FROM rpl_sales_info_sap sis WHERE sis.billing_doc_no = %s;"
         billing_doc_no = request.data.get('billing_doc_no')
-        result = execute_raw_query(sql,[billing_doc_no])
-        serializer.validated_data['net_val']=round(result[0][0],2);
+        results = execute_raw_query(sql,[billing_doc_no])
+        data=dict()
+        net_val=0.00
+        for result in results:
+            net_val+=float(result[1]+result[3])
+            unit_vat=result[1]/result[2]
+            data[result[0]]={"vat":result[1],"quantity":result[2],"net_val":result[3],"unit_vat":unit_vat}
+            
+        serializer.validated_data['net_val']=net_val
+        
         if request.data.get('type') == "cash_collection":
             cash_collection = request.data.get('cash_collection')
-            # if cash_collection>delivery.net_val:
-            #     return Response({"success":False,"message":"Cash collection exceed the net value"},status=status.HTTP_400_BAD_REQUEST)
             delivery_items=request.data.get('deliverys',[])
-            return_values=[]
             return_amount=0.00
             for items in delivery_items:
-                return_amount+=float(items['return_net_val'])
-                return_values.append(items['return_net_val'])
+                matnr=str(items['id'])
+                amount=data[matnr]['unit_vat']*items['return_quantity']
+                return_amount+=amount
 
             print('return amount is: ',return_amount)
             if return_amount>0.00:
                 serializer.validated_data['return_status']=1
             serializer.validated_data['return_amount']=return_amount
-            due = float(result[0][0]) - float(cash_collection)-return_amount
+            due = net_val - float(cash_collection)-return_amount
             serializer.validated_data['due_amount']=round(due, 2);
             serializer.validated_data['cash_collection_date_time'] = datetime.now(tz_Dhaka)
             # Create Payment History Object
@@ -295,7 +301,7 @@ def cash_collection_save(request, pk):
         
         elif request.data.get('type') == "return":
             serializer.validated_data['return_date_time'] = datetime.now(tz_Dhaka)
-        
+            
         serializer.update(delivery, serializer.validated_data)
         
         return Response({"success": True, "result": serializer.data}, status=status.HTTP_200_OK)
@@ -452,3 +458,51 @@ def collect_overdue(request):
         utils.CreatePaymentHistoryObject(billing_doc_no=billing_doc_no,partner=delivery.partner,da_code=da_code,route_code=delivery.route_code,cash_collection=cash_collection,cash_collection_date_time=datetime.now(tz_Dhaka),cash_collection_latitude=cash_collection_latitude,cash_collection_longitude=cash_collection_longitude)
         return Response({"success": True,"message":"successfully collect overdue", "result":data}, status=status.HTTP_200_OK)
     return Response({"success":False,"message":'wrong method'},status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def monthly_report(request):
+    if request.method=="GET":
+        sql="SELECT billing_date,SUM(net_val) AS total_net_val,SUM(return_amount) AS total_return_amount,COUNT(CASE WHEN delivery_status = 'Done' THEN 1 END) AS total_complete_delivery,COUNT(billing_doc_no) AS total_delivery,COUNT(CASE WHEN cash_collection_status='Done' THEN 1 END) AS total_complete_collection,SUM(cash_collection) AS total_cash_collection FROM rdl_delivery WHERE MONTH(billing_date) = MONTH(CURRENT_DATE) AND YEAR(billing_date) = YEAR(CURRENT_DATE)GROUP BY billing_date ORDER BY billing_date ASC;"
+        result = execute_raw_query(sql)
+        if not result:
+                return Response({"success": True, "result": []}, status=status.HTTP_200_OK)
+        data_list = [
+            {
+                'billing_date': row[0],
+                'total_net_val': row[1],
+                'total_return_amount': row[2],
+                'total_complete_delivery': row[3],
+                'total_delivery': row[4],
+                'total_complete_collection': row[5],
+                'total_cash_collection': row[6],
+            }
+            for row in result
+        ]
+        # print(data_list)
+        report=[]
+        for row in data_list:
+            date=str(row['billing_date'])
+            total_net_val=float(row['total_net_val'])
+            total_return_amount=float(row['total_return_amount'])
+            revised_total_amount=total_net_val-total_return_amount
+            total_delivery=float(row['total_delivery'])
+            total_complete_delivery=float(row['total_complete_delivery'])
+            total_complete_collection=float(row['total_complete_collection'])
+            total_cash_collection=float(row['total_cash_collection'])
+            print(date,revised_total_amount,total_delivery,total_complete_delivery,total_complete_collection,total_cash_collection)
+            #calculation
+            delivery_done=(total_complete_delivery/total_delivery)*100 if total_delivery>0 else 0
+            collection_done=(total_complete_collection/total_delivery)*100 if total_delivery>0 else 0
+            cash_collection=(total_cash_collection/revised_total_amount)*100 if revised_total_amount>0 else 0.00
+            return_amount=(total_return_amount/total_net_val)*100 if total_net_val>0 else 0.00
+            temp={
+                "billing_date":date,
+                "delivery_done":delivery_done,
+                "collection_done":collection_done,
+                "cash_collection":cash_collection,
+                "return_amount":return_amount
+            }
+            report.append(temp)
+            
+        return Response({"success": True, "result": report},status=status.HTTP_200_OK)
+    return Response({"success":False,"message":"wrong method"},status=status.HTTP_200_OK)
