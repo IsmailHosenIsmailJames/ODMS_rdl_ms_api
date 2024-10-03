@@ -328,7 +328,7 @@ def cash_overdue(request,da_code):
                 "CONCAT(c.name1,c.name2) customer_name,CONCAT(c.street,c.street1,c.street2) customer_address,c.mobile_no customer_mobile, " \
                 "cl.latitude,cl.longitude, " \
                 "d.id,dl.id list_id,d.transport_type," \
-                "dl.return_quantity,dl.return_net_val,dl.delivery_quantity,dl.delivery_net_val,IF(d.delivery_status IS NULL,'Pending',d.delivery_status) delivery_status,d.cash_collection,IF(d.cash_collection_status IS NULL,'Pending',d.cash_collection_status) cash_collection_status " \
+                "dl.return_quantity,dl.return_net_val,dl.delivery_quantity,dl.delivery_net_val,IF(d.delivery_status IS NULL,'Pending',d.delivery_status) delivery_status,d.cash_collection,d.due_amount,IF(d.cash_collection_status IS NULL,'Pending',d.cash_collection_status) cash_collection_status " \
                 "FROM rdl_delivery_info_sap dis " \
                 "LEFT JOIN rdl_route_sap rs ON dis.route=rs.route " \
                 "INNER JOIN rpl_sales_info_sap sis ON dis.billing_doc_no=sis.billing_doc_no " \
@@ -336,7 +336,7 @@ def cash_overdue(request,da_code):
                 "INNER JOIN rpl_customer c ON sis.partner=c.partner " \
                 "LEFT JOIN (SELECT DISTINCT customer_id, latitude, longitude FROM rdl_customer_location LIMIT 1) cl ON sis.partner = cl.customer_id " \
                 "LEFT JOIN rdl_delivery d ON sis.billing_doc_no=d.billing_doc_no " \
-                "LEFT JOIN rdl_delivery_list dl ON d.id=dl.delivery_id AND sis.matnr=dl.matnr " \
+                "LEFT JOIN rdl_delivery_list dl ON d.id=dl.delivery_id AND sis.matnr=dl.matnr AND sis.batch=dl.batch " \
                 "WHERE d.route_code = %s AND d.due_amount != 0"
         
         if start_date!=" " and start_date!=None:
@@ -348,6 +348,7 @@ def cash_overdue(request,da_code):
         if partner:
             sql += f" AND d.partner={partner}"
         data_list = DeliveryInfoModel.objects.raw(sql,[route])
+        print(sql)
         if len(data_list) == 0:
             return Response({"success": False, "message": "Data not available!"}, status=status.HTTP_200_OK)
         else:
@@ -409,6 +410,7 @@ def cash_overdue(request,da_code):
                     "delivery_status": key_and_group[key][0].delivery_status,
                     "cash_collection": cash_collection,
                     "cash_collection_status": key_and_group[key][0].cash_collection_status,
+                    "due_amount":key_and_group[key][0].due_amount,
                     "gate_pass_no": key_and_group[key][0].gate_pass_no,
                     "vehicle_no": key_and_group[key][0].vehicle_no,
                     "transport_type": key_and_group[key][0].transport_type,
