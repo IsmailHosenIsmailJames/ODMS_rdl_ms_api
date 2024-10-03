@@ -288,6 +288,8 @@ def cash_collection_save(request, pk):
             for items in delivery_items:
                 matnr=str(items['id'])
                 amount=(data[matnr]['unit_vat']+data[matnr]['unit_price'])*items['return_quantity']
+                if items['return_quantity']>data[matnr]['quantity']:
+                    return Response({"success":False,"message":"Return quantity exceeds total quantity"},status=status.HTTP_200_OK)
                 return_amount+=float(amount)
                 print(amount, matnr,data[matnr]['unit_vat'])
 

@@ -8,6 +8,7 @@ from delivery_app.serializers import DeliverySerializer
 from itertools import groupby
 from datetime import datetime
 import pytz
+from collection_app.utils import CreateReturnList
 
 @api_view(['GET'])
 def delivery_list_v2(request,sap_id):
@@ -38,9 +39,10 @@ def delivery_list_v2(request,sap_id):
                 "INNER JOIN rpl_customer c ON sis.partner=c.partner " \
                 "LEFT JOIN (SELECT DISTINCT customer_id, latitude, longitude FROM rdl_customer_location LIMIT 1) cl ON sis.partner = cl.customer_id " \
                 "LEFT JOIN rdl_delivery d ON sis.billing_doc_no=d.billing_doc_no " \
-                "LEFT JOIN rdl_delivery_list dl ON d.id=dl.delivery_id AND sis.matnr=dl.matnr " \
+                "LEFT JOIN rdl_delivery_list dl ON d.id=dl.delivery_id AND sis.matnr=dl.matnr AND sis.batch=dl.batch " \
                 "WHERE dis.da_code = '%s' "+query+" ;"
-
+    
+    # print(sql)
     data_list = DeliveryInfoModel.objects.raw(sql,[sap_id])
     if len(data_list) == 0:
         return Response({"success": False, "message": "Data not available!"}, status=status.HTTP_200_OK)
@@ -248,6 +250,22 @@ def delivery_save(request):
                 "return_net_val": return_amount,
                 
             })
+            if item["return_quantity"]:
+                CreateReturnList(
+                    matnr = item["matnr"],
+                    batch = item["batch"],
+                    return_quantity = item["return_quantity"],
+                    return_net_val = return_amount,
+                    billing_doc_no = request.data['billing_doc_no'],
+                    billing_date = request.data['billing_date'],
+                    da_code = request.data['da_code'],
+                    gate_pass_no = request.data['gate_pass_no'],
+                    partner = request.data['partner'],
+                    route_code = request.data['route_code']
+                )
+            else:
+                print('no return quantity')
+        # return Response({"success": True,"message":"success"},status=status.HTTP_200_OK)
         main_data = {
             "billing_date": request.data['billing_date'],
             "billing_doc_no": request.data['billing_doc_no'],
