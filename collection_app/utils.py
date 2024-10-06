@@ -25,12 +25,13 @@ def CreatePaymentHistoryObject(billing_doc_no,partner,da_code,route_code,cash_co
         cash_collection_longitude=cash_collection_longitude
     )
     
-def CreateReturnList(matnr, batch, return_quantity, return_net_val, billing_doc_no, billing_date, da_code, gate_pass_no, partner, route_code):
+def CreateReturnList(matnr, batch, return_quantity, return_net_val, billing_doc_no, billing_date, da_code, gate_pass_no, partner, route_code,return_time):
     ReturnListModel.objects.create(
         matnr=matnr,
         batch=batch,
         return_quantity=return_quantity,
         return_net_val=return_net_val,
+        return_time=return_time,
         billing_doc_no=billing_doc_no,
         billing_date=billing_date,
         da_code=da_code,

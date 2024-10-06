@@ -76,6 +76,10 @@ class ReturnListModel(models.Model):
     batch=models.CharField(max_length=40,null=False)
     return_quantity = models.DecimalField(max_digits=10,decimal_places=2,null=True)
     return_net_val = models.DecimalField(max_digits=10,decimal_places=2,null=True)
+    class ReturnTime(models.TextChoices):
+        v0='Delivery','Delivery'
+        v1='Cash_Collection','Cash_Collection'
+    return_time=models.CharField(max_length=20,choices=ReturnTime,null=True)
     billing_doc_no=models.CharField(max_length=10,null=False)
     billing_date=models.DateField(null=False)
     partner=models.CharField(max_length=10,null=False)

@@ -11,7 +11,7 @@ from delivery_app.serializers import DeliverySerializer
 from datetime import datetime,timedelta
 from django.db import connection
 from django.utils import timezone
-from .models import PaymentHistory
+from .models import PaymentHistory, ReturnListModel
 from decimal import Decimal
 from . import utils
 from .constants import tz_Dhaka
@@ -319,6 +319,21 @@ def cash_collection_save(request, pk):
                         record.delivery_quantity-=Decimal(new_quantity)
                         record.delivery_net_val-=Decimal(data[key]["unit_total"]*new_quantity)
                         record.save()
+                        # print(new_quantity)
+                        # if new_quantity>0:
+                        #     utils.CreateReturnList(
+                        #         matnr=matnr,
+                        #         batch=batch,
+                        #         return_quantity=new_quantity,
+                        #         return_net_val=data[key]["unit_total"]*new_quantity,
+                        #         billing_doc_no=billing_doc_no,
+                        #         billing_date=request.data.get('billing_date'),
+                        #         da_code=request.data.get('da_code'),
+                        #         gate_pass_no=request.data.get('gate_pass_no'),
+                        #         partner=request.data.get('partner'),
+                        #         route_code=request.data.get('route_code'),
+                        #         return_time=ReturnListModel.ReturnTime.v1
+                        #     )
                     except DeliveryListModel.DoesNotExist:
                         return Response({"success":False,"message":"matnr does not found"},status=status.HTTP_200_OK)
 

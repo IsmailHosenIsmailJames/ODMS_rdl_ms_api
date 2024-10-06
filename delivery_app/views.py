@@ -9,6 +9,7 @@ from itertools import groupby
 from datetime import datetime
 import pytz
 from collection_app.utils import CreateReturnList
+from collection_app.models import ReturnListModel
 
 @api_view(['GET'])
 def delivery_list_v2(request,sap_id):
@@ -257,6 +258,7 @@ def delivery_save(request):
                     batch = item["batch"],
                     return_quantity = item["return_quantity"],
                     return_net_val = return_amount,
+                    return_time=ReturnListModel.ReturnTime.v0,
                     billing_doc_no = request.data['billing_doc_no'],
                     billing_date = request.data['billing_date'],
                     da_code = request.data['da_code'],
