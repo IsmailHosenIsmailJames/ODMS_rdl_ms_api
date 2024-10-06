@@ -31,7 +31,7 @@ def delivery_list_v2(request,sap_id):
                 "CONCAT(c.name1,c.name2) customer_name,CONCAT(c.street,c.street1,c.street2) customer_address,c.mobile_no customer_mobile, " \
                 "cl.latitude,cl.longitude, " \
                 "d.id,dl.id list_id,d.transport_type," \
-                "dl.delivery_quantity,dl.delivery_net_val,dl.return_quantity,dl.return_net_val,IF(d.delivery_status IS NULL,'Pending',d.delivery_status) delivery_status,d.cash_collection,IF(d.cash_collection_status IS NULL,'Pending',d.cash_collection_status) cash_collection_status " \
+                "dl.delivery_quantity,dl.delivery_net_val,dl.return_quantity,dl.return_net_val,IF(d.delivery_status IS NULL,'Pending',d.delivery_status) delivery_status,d.cash_collection,IF(d.cash_collection_status IS NULL,'Pending',d.cash_collection_status) cash_collection_status, (SELECT SUM(d2.due_amount) FROM rdl_delivery d2 WHERE d.partner=sis.partner AND d2.billing_date<CURRENT_DATE) AS previous_due_amount " \
                 "FROM rdl_delivery_info_sap dis " \
                 "LEFT JOIN rdl_route_sap rs ON dis.route=rs.route " \
                 "INNER JOIN rpl_sales_info_sap sis ON dis.billing_doc_no=sis.billing_doc_no " \
@@ -42,7 +42,7 @@ def delivery_list_v2(request,sap_id):
                 "LEFT JOIN rdl_delivery_list dl ON d.id=dl.delivery_id AND sis.matnr=dl.matnr AND sis.batch=dl.batch " \
                 "WHERE dis.da_code = '%s' "+query+" ;"
     
-    # print(sql)
+    print(sql)
     data_list = DeliveryInfoModel.objects.raw(sql,[sap_id])
     if len(data_list) == 0:
         return Response({"success": False, "message": "Data not available!"}, status=status.HTTP_200_OK)
@@ -101,6 +101,7 @@ def delivery_list_v2(request,sap_id):
                 "customer_name": key_and_group[key][0].customer_name,
                 "customer_address": key_and_group[key][0].customer_address,
                 "customer_mobile": key_and_group[key][0].customer_mobile,
+                "previous_due_amount": key_and_group[key][0].previous_due_amount,
                 "latitude": key_and_group[key][0].latitude,
                 "longitude": key_and_group[key][0].longitude,
                 "delivery_status": key_and_group[key][0].delivery_status,

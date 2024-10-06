@@ -6,9 +6,9 @@ from rest_framework import status
 from rest_framework.response import Response
 from itertools import groupby
 import pytz
-from delivery_app.models import DeliveryInfoModel, DeliveryModel
+from delivery_app.models import DeliveryInfoModel, DeliveryModel,DeliveryListModel
 from delivery_app.serializers import DeliverySerializer
-from datetime import datetime
+from datetime import datetime,timedelta
 from django.db import connection
 from django.utils import timezone
 from .models import PaymentHistory
@@ -50,7 +50,7 @@ def cash_collection_list_v2(request,sap_id):
                 "CONCAT(c.name1,c.name2) customer_name,CONCAT(c.street,c.street1,c.street2) customer_address,c.mobile_no customer_mobile, " \
                 "cl.latitude,cl.longitude, " \
                 "d.id,dl.id list_id,d.transport_type," \
-                "dl.return_quantity,dl.return_net_val,dl.delivery_quantity,dl.delivery_net_val,IF(d.delivery_status IS NULL,'Pending',d.delivery_status) delivery_status,d.cash_collection,IF(d.cash_collection_status IS NULL,'Pending',d.cash_collection_status) cash_collection_status " \
+                "dl.return_quantity,dl.return_net_val,dl.delivery_quantity,dl.delivery_net_val,IF(d.delivery_status IS NULL,'Pending',d.delivery_status) delivery_status,d.cash_collection,IF(d.cash_collection_status IS NULL,'Pending',d.cash_collection_status) cash_collection_status , (SELECT SUM(d2.due_amount) FROM rdl_delivery d2 WHERE d.partner=sis.partner AND d2.billing_date<CURRENT_DATE) AS previous_due_amount " \
                 "FROM rdl_delivery_info_sap dis " \
                 "LEFT JOIN rdl_route_sap rs ON dis.route=rs.route " \
                 "INNER JOIN rpl_sales_info_sap sis ON dis.billing_doc_no=sis.billing_doc_no " \
@@ -118,6 +118,7 @@ def cash_collection_list_v2(request,sap_id):
                     "customer_name": key_and_group[key][0].customer_name,
                     "customer_address": key_and_group[key][0].customer_address,
                     "customer_mobile": key_and_group[key][0].customer_mobile,
+                    "previous_due_amount": key_and_group[key][0].previous_due_amount,
                     "latitude": key_and_group[key][0].latitude,
                     "longitude": key_and_group[key][0].longitude,
                     "delivery_status": key_and_group[key][0].delivery_status,
@@ -268,18 +269,29 @@ def cash_collection_save(request, pk):
     tz_Dhaka = pytz.timezone('Asia/Dhaka')
     serializer = DeliverySerializer(delivery, data=request.data, partial=True)
     if serializer.is_valid():
-        sql = "SELECT matnr,vat,quantity,net_val FROM rpl_sales_info_sap sis WHERE sis.billing_doc_no = %s;"
+        sql = "SELECT sis.matnr,sis.batch,sis.vat,sis.quantity,sis.net_val,sis.tp FROM rpl_sales_info_sap sis WHERE sis.billing_doc_no = %s;"
         billing_doc_no = request.data.get('billing_doc_no')
         results = execute_raw_query(sql,[billing_doc_no])
         data=dict()
-        net_val=0.00
+        total_net_val=0.00
         for result in results:
-            net_val+=float(result[1]+result[3])
-            unit_vat=result[1]/result[2]
-            unit_price=result[3]/result[2]
-            data[result[0]]={"vat":result[1],"quantity":result[2],"net_val":result[3],"unit_vat":unit_vat,"unit_price":unit_price}
+            matnr,batch,vat,quantity,net_val=result[0],result[1],float(result[2]),float(result[3]),float(result[4])
+            total_net_val = total_net_val + vat + net_val
+            unit_vat,unit_price= vat/quantity, net_val/quantity
+            unit_total = unit_vat + unit_price
+            key=str(str(matnr)+str(batch))
+            data[key]={
+                "matnr":matnr,
+                "batch":batch,
+                "vat":vat,
+                "quantity":quantity,
+                "net_val":net_val,
+                "unit_vat":unit_vat,
+                "unit_price":unit_price,
+                "unit_total":unit_total
+            }
             
-        serializer.validated_data['net_val']=net_val
+        serializer.validated_data['net_val']=total_net_val
         
         if request.data.get('type') == "cash_collection":
             cash_collection = request.data.get('cash_collection')
@@ -287,22 +299,45 @@ def cash_collection_save(request, pk):
             return_amount=0.00
             for items in delivery_items:
                 matnr=str(items['id'])
-                amount=(data[matnr]['unit_vat']+data[matnr]['unit_price'])*items['return_quantity']
-                if items['return_quantity']>data[matnr]['quantity']:
+                batch=items['batch']
+                return_quantity=float(items["return_quantity"])
+                key=str(str(matnr)+str(batch))
+                amount=data[key]["unit_total"]*return_quantity
+                # amount=(data[matnr]['unit_vat']+data[matnr]['unit_price'])*items['return_quantity']
+                if return_quantity>data[key]['quantity']:
                     return Response({"success":False,"message":"Return quantity exceeds total quantity"},status=status.HTTP_200_OK)
-                return_amount+=float(amount)
-                print(amount, matnr,data[matnr]['unit_vat'])
+                return_amount+=amount
+                if return_quantity>0:
+                    try:
+                        record=DeliveryListModel.objects.get(delivery=pk,matnr=matnr,batch=batch)
+                        # calculate new return quantity
+                        old_quantity=float(record.return_quantity)
+                        new_quantity=return_quantity-old_quantity
+                        # update record
+                        record.return_quantity=return_quantity
+                        record.return_net_val = data[key]["unit_total"]*return_quantity
+                        record.delivery_quantity-=Decimal(new_quantity)
+                        record.delivery_net_val-=Decimal(data[key]["unit_total"]*new_quantity)
+                        record.save()
+                    except DeliveryListModel.DoesNotExist:
+                        return Response({"success":False,"message":"matnr does not found"},status=status.HTTP_200_OK)
 
-            print('return amount is: ',return_amount)
             if return_amount>0.00:
                 serializer.validated_data['return_status']=1
             serializer.validated_data['return_amount']=return_amount
-            due = net_val - float(cash_collection)-return_amount
-            print(due,net_val,cash_collection,return_amount,'checking.........')
+            due = total_net_val - float(cash_collection)-return_amount
             serializer.validated_data['due_amount']=round(due, 2);
             serializer.validated_data['cash_collection_date_time'] = datetime.now(tz_Dhaka)
             # Create Payment History Object
-            utils.CreatePaymentHistoryObject(billing_doc_no=billing_doc_no,partner=delivery.partner,da_code=delivery.da_code,route_code=delivery.route_code,cash_collection=cash_collection,cash_collection_date_time=datetime.now(tz_Dhaka),cash_collection_latitude=request.data.get('cash_collection_latitude', None),cash_collection_longitude=request.data.get('cash_collection_latitude', None))
+            utils.CreatePaymentHistoryObject(
+                billing_doc_no = billing_doc_no,
+                partner = delivery.partner,
+                da_code = delivery.da_code,
+                route_code = delivery.route_code,
+                cash_collection = cash_collection,
+                cash_collection_date_time = datetime.now(tz_Dhaka),
+                cash_collection_latitude = request.data.get('cash_collection_latitude', None),cash_collection_longitude = request.data.get('cash_collection_latitude', None)
+                )
         
         elif request.data.get('type') == "return":
             serializer.validated_data['return_date_time'] = datetime.now(tz_Dhaka)
@@ -317,10 +352,8 @@ def cash_collection_save(request, pk):
 def cash_overdue(request,da_code):
     if request.method == 'GET':
         route=utils.get_da_route(da_code)
-        start_date = request.query_params.get("start_date")
-        end_date = request.query_params.get("end_date")
         partner=request.query_params.get("partner")
-        current_date = timezone.now().date()
+        previous_date = timezone.now().date()-timedelta(days=1)
 
         sql = "SELECT dis.*,IFNULL(rs.description, 'No Route Name') AS route_name, " \
                 "sis.billing_type,sis.partner,sis.matnr,sis.quantity,sis.tp,sis.vat,sis.net_val,sis.assigment,sis.gate_pass_no,sis.batch,sis.plant,sis.team,sis.created_on, " \
@@ -337,14 +370,8 @@ def cash_overdue(request,da_code):
                 "LEFT JOIN (SELECT DISTINCT customer_id, latitude, longitude FROM rdl_customer_location LIMIT 1) cl ON sis.partner = cl.customer_id " \
                 "LEFT JOIN rdl_delivery d ON sis.billing_doc_no=d.billing_doc_no " \
                 "LEFT JOIN rdl_delivery_list dl ON d.id=dl.delivery_id AND sis.matnr=dl.matnr AND sis.batch=dl.batch " \
-                "WHERE d.route_code = %s AND d.due_amount != 0"
+                "WHERE d.route_code = %s AND d.due_amount != 0 AND d.billing_date < CURRENT_DATE "
         
-        if start_date!=" " and start_date!=None:
-            sql += f" AND billing_date BETWEEN {start_date}"
-            if end_date:
-                sql += f" AND {end_date}"
-            else:
-                sql += f" AND {current_date}"
         if partner:
             sql += f" AND d.partner={partner}"
         data_list = DeliveryInfoModel.objects.raw(sql,[route])
