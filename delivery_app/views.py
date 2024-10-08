@@ -88,8 +88,7 @@ def delivery_list_v2(request,sap_id):
                 cash_collection = 0
                 if key_and_group[key][0].cash_collection is not None:
                     cash_collection = key_and_group[key][0].cash_collection
-
-                
+            previous_due_amount=key_and_group[key][0].previous_due_amount 
             main_data = {
                 "id": key_and_group[key][0].id,
                 "billing_doc_no": key_and_group[key][0].billing_doc_no,
@@ -130,6 +129,7 @@ def delivery_list_v2(request,sap_id):
                     "customer_name": group[0]['customer_name'],
                     "customer_address": group[0]['customer_address'],
                     "customer_mobile": group[0]['customer_mobile'],
+                    "previous_due_amount":group[0]['previous_due_amount'],
                     "latitude": group[0]['latitude'],
                     "longitude": group[0]['longitude'],
                     "gate_pass_no": group[0]['gate_pass_no'],
