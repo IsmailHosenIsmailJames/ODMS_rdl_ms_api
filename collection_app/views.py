@@ -50,7 +50,7 @@ def cash_collection_list_v2(request,sap_id):
                 "CONCAT(c.name1,c.name2) customer_name,CONCAT(c.street,c.street1,c.street2) customer_address,c.mobile_no customer_mobile, " \
                 "cl.latitude,cl.longitude, " \
                 "d.id,dl.id list_id,d.transport_type," \
-                "dl.return_quantity,dl.return_net_val,dl.delivery_quantity,dl.delivery_net_val,IF(d.delivery_status IS NULL,'Pending',d.delivery_status) delivery_status,d.cash_collection,IF(d.cash_collection_status IS NULL,'Pending',d.cash_collection_status) cash_collection_status , (SELECT SUM(d2.due_amount) FROM rdl_delivery d2 WHERE d.partner=sis.partner AND d2.billing_date<CURRENT_DATE) AS previous_due_amount " \
+                "dl.return_quantity,dl.return_net_val,dl.delivery_quantity,dl.delivery_net_val,IF(d.delivery_status IS NULL,'Pending',d.delivery_status) delivery_status,d.cash_collection,IF(d.cash_collection_status IS NULL,'Pending',d.cash_collection_status) cash_collection_status , (SELECT SUM(d2.due_amount) FROM rdl_delivery d2 WHERE d2.partner=sis.partner AND d2.billing_date<CURRENT_DATE) AS previous_due_amount " \
                 "FROM rdl_delivery_info_sap dis " \
                 "LEFT JOIN rdl_route_sap rs ON dis.route=rs.route " \
                 "INNER JOIN rpl_sales_info_sap sis ON dis.billing_doc_no=sis.billing_doc_no " \
@@ -146,6 +146,7 @@ def cash_collection_list_v2(request,sap_id):
                         "customer_name": group[0]['customer_name'],
                         "customer_address": group[0]['customer_address'],
                         "customer_mobile": group[0]['customer_mobile'],
+                        "previous_due_amount": group[0]['previous_due_amount'],
                         "gate_pass_no": group[0]['gate_pass_no'],
                         "latitude": group[0]['latitude'],
                         "longitude": group[0]['longitude'],
