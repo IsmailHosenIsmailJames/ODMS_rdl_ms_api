@@ -10,6 +10,7 @@ from datetime import datetime
 import pytz
 from collection_app.utils import CreateReturnList
 from collection_app.models import ReturnListModel
+from .models import DeliveryModel
 
 @api_view(['GET'])
 def delivery_list_v2(request,sap_id):
@@ -232,12 +233,19 @@ def delivery_save(request):
     if request.method == 'POST':
         tz_Dhaka = pytz.timezone('Asia/Dhaka')
         productList = []
+        print("data requested", request.data)
+        net_val=0.0
+        total_return_amount=0.0
         for item in request.data['deliverys']:
             unit_vat=item["vat"]/item["quantity"]
             unit_price=item["net_val"]/item["quantity"]
             unit_price_with_vat=unit_vat+unit_price
             return_amount=round(unit_price_with_vat*item["return_quantity"],2)
             delivery_amount=round(unit_price_with_vat * item["delivery_quantity"],2)
+            quantity=item["quantity"]
+            net_val=round(net_val+round(unit_price_with_vat*quantity,2),2)
+            total_return_amount=round(total_return_amount+return_amount,2)
+            print("test....",net_val, total_return_amount)
             productList.append({
                 "batch": item["batch"],
                 "tp": item["tp"],
@@ -252,6 +260,8 @@ def delivery_save(request):
                 "return_net_val": return_amount,
                 
             })
+            
+            
             if item["return_quantity"]:
                 CreateReturnList(
                     matnr = item["matnr"],
@@ -269,6 +279,11 @@ def delivery_save(request):
             else:
                 print('no return quantity')
         # return Response({"success": True,"message":"success"},status=status.HTTP_200_OK)
+        return_status=DeliveryModel.ReturnStatus.v0
+        if total_return_amount>0.0:
+            return_status=DeliveryModel.ReturnStatus.v1
+        total_due_amount=round(net_val-total_return_amount,2)
+        print("testing.......",total_due_amount,net_val)
         main_data = {
             "billing_date": request.data['billing_date'],
             "billing_doc_no": request.data['billing_doc_no'],
@@ -284,6 +299,10 @@ def delivery_save(request):
             "transport_type": request.data['transport_type'],
             "type": request.data['type'],
             "vehicle_no": request.data['vehicle_no'],
+            "net_val":net_val,
+            "due_amount":total_due_amount,
+            "return_amount":total_return_amount,
+            "return_status":return_status,
             "deliverys": productList,
         }
 
