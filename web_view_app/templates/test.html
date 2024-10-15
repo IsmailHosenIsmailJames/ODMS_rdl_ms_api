@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DA Summary</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 5px;
+      }
+
+      h2 {
+        text-align: center;
+        font-size: 32px;
+        color: #007bff;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .table-container {
+        margin-bottom: 20px;
+        overflow-x: auto;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 5px 10px;
+        text-align: left;
+        width: 50%;
+        padding-left: 10px;
+        font-size: 28px;
+      }
+
+      th {
+        background-color: #127ac9; /* Header background color */
+        color: black; /* Header text color */
+      }
+
+      .signature-container {
+        max-width: 400px;
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+      }
+
+      .signature-box {
+        width: 48%;
+        text-align: center;
+        padding: 10px 0;
+      }
+
+      .signature {
+        font-size: 18px;
+        border: none;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>DA Summary</h2>
+    <div class="table-container">
+      {% for item in data %}
+      <table>
+        <thead>
+          <tr>
+            <th>Gate Pass No</th>
+            <th>{{ item.gate_pass_no }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Total Invoice</td>
+            <td>{{ item.total_invoice }}</td>
+          </tr>
+          <tr>
+            <td>Total Amount</td>
+            <td>{{ item.total_amount }}</td>
+          </tr>
+          <tr>
+            <td>Delivery Remaining</td>
+            <td>{{ item.delivery_remaining }}</td>
+          </tr>
+          <tr>
+            <td>Remaining Delivery Amount</td>
+            <td>{{ item.remaining_delivery_amount }}</td>
+          </tr>
+          <tr>
+            <td>Delivered Invoice</td>
+            <td>{{ item.delivery_done }}</td>
+          </tr>
+          <tr>
+            <td>Delivered Net Value</td>
+            <td>{{ item.delivery_net_val }}</td>
+          </tr>
+          <tr>
+            <td>Cash Collection</td>
+            <td>{{ item.cash_collection }}</td>
+          </tr>
+          <tr>
+            <td>Cash Collection Amount</td>
+            <td>{{ item.cash_collection_amount }}</td>
+          </tr>
+          <tr>
+            <td>Remaining Cash Collection</td>
+            <td>{{ item.cash_collection_remaining }}</td>
+          </tr>
+          <tr>
+            <td>Remaining Cash Collection Amount</td>
+            <td>{{ item.cash_collection_remaining_amount }}</td>
+          </tr>
+          <tr>
+            <td>Return Amount</td>
+            <td>{{ item.return_amount }}</td>
+          </tr>
+          <tr>
+            <td>Due Amount</td>
+            <td>{{ item.due_amount }}</td>
+          </tr>
+        </tbody>
+      </table>
+      {% empty %}
+      <h3 colspan="11" style="text-align: center">No data available</h3>
+      {% endfor %}
+    </div>
+
+    <table>
+      <tr>
+        <td class="signature">
+          <br />
+          _______________________
+          <br />
+          Depot Signature
+        </td>
+        <td class="signature">
+          <br />
+          _______________________
+          <br />
+          DA Signature
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
