@@ -391,7 +391,6 @@ def cash_overdue(request,da_code):
         if partner:
             sql += f" AND d.partner={partner}"
         data_list = DeliveryInfoModel.objects.raw(sql,[route])
-        print(sql)
         if len(data_list) == 0:
             return Response({"success": False, "message": "Data not available!"}, status=status.HTTP_200_OK)
         else:

@@ -4,6 +4,7 @@ from rest_framework import status
 from django.db import connection
 from .models import CustomerLocationModel
 from .serializers import CustomerLocationSerializer
+from collection_app.utils import get_da_route
 
 @api_view(['GET'])
 def customer_details(request, partner):
@@ -43,10 +44,14 @@ def customer_details(request, partner):
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 @api_view(['GET'])
-def customer_list(request):
+def customer_list(request,da_code):
     if request.method == 'GET':
+        # Get Route
+        print(da_code)
+        route = get_da_route(da_code)
+        newRoute="0000"+str(route)
         # Base SQL query
-        sql_query = "SELECT * FROM rpl_customer WHERE 1=1"
+        sql_query = "SELECT * FROM rpl_customer WHERE 1=1 AND trans_p_zone = %s"
 
         # Apply search filters for `name1` and `partner`
         search_name = request.GET.get('name1', '')
@@ -66,9 +71,9 @@ def customer_list(request):
 
         # Execute the raw query to fetch the customers with pagination
         with connection.cursor() as cursor:
-            cursor.execute(sql_query)
+            cursor.execute(sql_query, [newRoute])
             customers = cursor.fetchall()
-
+        print(sql_query)
         # Fetch total number of customers for pagination purposes
         total_query = "SELECT COUNT(*) FROM rpl_customer WHERE 1=1"
         if search_name:
@@ -79,7 +84,7 @@ def customer_list(request):
         with connection.cursor() as cursor:
             cursor.execute(total_query)
             total_customers = cursor.fetchone()[0]
-
+        print(total_query)
         # Convert raw SQL data to a list of dictionaries
         columns = [
             'partner', 'name1', 'name2', 'contact_person', 'street', 
@@ -100,6 +105,41 @@ def customer_list(request):
             "total_customers": total_customers,
             "total_pages": total_pages,
             "current_page": page,
+            "results": customer_list
+        }, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def customer_list_v2(request,da_code):
+    if request.method == 'GET':
+        # Get Route
+        route=get_da_route(da_code)
+        new_route="0000"+str(route)
+        sql=f"SELECT * FROM rpl_customer WHERE trans_p_zone = '{new_route}'"
+        search_name = request.GET.get('name1', '')
+        search_partner = request.GET.get('partner', '')
+        if search_name:
+            sql += f" AND name1 LIKE '%%{search_name}%%'"
+        if search_partner:
+            sql += f" AND partner LIKE '%%{search_partner}%%'"
+            
+        with connection.cursor() as cursor:
+            cursor.execute(sql)
+            customers = cursor.fetchall()
+        print(sql)
+        # Convert raw SQL data to a list of dictionaries
+        columns = [
+            'partner', 'name1', 'name2', 'contact_person', 'street', 
+            'street1', 'street2', 'street3', 'post_code', 'upazilla', 
+            'district', 'mobile_no', 'email', 'drug_reg_no', 
+            'customer_grp', 'trans_p_zone'
+        ]
+        customer_list = [
+            dict(zip(columns, customer)) for customer in customers
+        ]
+        print(customer_list)
+        return Response({
+            "success": True,
             "results": customer_list
         }, status=status.HTTP_200_OK)
 
