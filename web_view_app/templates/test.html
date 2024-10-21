@@ -1,150 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DA Summary</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Return List</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        padding: 5px;
-      }
-
-      h2 {
-        text-align: center;
-        font-size: 32px;
-        color: #007bff;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-
-      .table-container {
-        margin-bottom: 20px;
-        overflow-x: auto;
-        border-radius: 5px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      }
-
-      th,
-      td {
-        border: 1px solid #ddd;
-        padding: 5px 10px;
-        text-align: left;
-        width: 50%;
-        padding-left: 10px;
-        font-size: 28px;
-      }
-
-      th {
-        background-color: #127ac9; /* Header background color */
-        color: black; /* Header text color */
-      }
-
-      .signature-container {
-        max-width: 400px;
-        display: flex;
-        justify-content: space-between;
-        margin-top: 10px;
-      }
-
-      .signature-box {
-        width: 48%;
-        text-align: center;
-        padding: 10px 0;
-      }
-
-      .signature {
-        font-size: 18px;
-        border: none;
-        text-align: center;
-      }
+        .card {
+            box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+            padding: 5px;
+        }
+        div{
+            padding: 0px;
+            margin:0px;
+        }
+        p {
+            margin: 5px 0px;
+        }
+        .group {
+            display: flex;
+        }
+        .group p {
+            width: 50%;
+        }
+        .gate-pass {
+            border: 1 px solid gray;
+            border-radius: 5px;
+            box-shadow: rgba(142, 138, 138, 0.02) 0px 1px 3px 0px, rgba(146, 149, 152, 0.15) 0px 0px 0px 1px;
+        }
+        h4{
+          padding: 0px 5px;
+        }
+        .button {
+          display:inline-block;
+          padding: 10px 15px;
+          margin: 20px 0;
+          border-radius:5px;
+          text-decoration:none;
+          text-align:center;
+          color:#FFFFFF;
+          background-color:#007bff;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
     </style>
-  </head>
-  <body>
-    <h2>DA Summary</h2>
-    <div class="table-container">
-      {% for item in data %}
-      <table>
-        <thead>
-          <tr>
-            <th>Gate Pass No</th>
-            <th>{{ item.gate_pass_no }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Total Invoice</td>
-            <td>{{ item.total_invoice }}</td>
-          </tr>
-          <tr>
-            <td>Total Amount</td>
-            <td>{{ item.total_amount }}</td>
-          </tr>
-          <tr>
-            <td>Delivery Remaining</td>
-            <td>{{ item.delivery_remaining }}</td>
-          </tr>
-          <tr>
-            <td>Remaining Delivery Amount</td>
-            <td>{{ item.remaining_delivery_amount }}</td>
-          </tr>
-          <tr>
-            <td>Delivered Invoice</td>
-            <td>{{ item.delivery_done }}</td>
-          </tr>
-          <tr>
-            <td>Delivered Net Value</td>
-            <td>{{ item.delivery_net_val }}</td>
-          </tr>
-          <tr>
-            <td>Cash Collection</td>
-            <td>{{ item.cash_collection }}</td>
-          </tr>
-          <tr>
-            <td>Cash Collection Amount</td>
-            <td>{{ item.cash_collection_amount }}</td>
-          </tr>
-          <tr>
-            <td>Remaining Cash Collection</td>
-            <td>{{ item.cash_collection_remaining }}</td>
-          </tr>
-          <tr>
-            <td>Remaining Cash Collection Amount</td>
-            <td>{{ item.cash_collection_remaining_amount }}</td>
-          </tr>
-          <tr>
-            <td>Return Amount</td>
-            <td>{{ item.return_amount }}</td>
-          </tr>
-          <tr>
-            <td>Due Amount</td>
-            <td>{{ item.due_amount }}</td>
-          </tr>
-        </tbody>
-      </table>
-      {% empty %}
-      <h3 colspan="11" style="text-align: center">No data available</h3>
-      {% endfor %}
+</head>
+<body>
+    {% if status == 'view' %}
+    <div>
+      <a href="{% url 'reports' da_info.da_code %}" class="button">Back</a>
     </div>
+    {% endif %}
+    <div class="container">
+        <div class="gate-pass">
+            <h4>Gate Pass No: 46546564564</h4>
+            <div class="billing-doc">
+                <h4>Billing doc no: 8754445454</h4>
+                <div class="card">
+                    <div>
+                        <p>Name : Product Name character should be 46 characters</p>
+                    </div>
+                    <!-- <div class="group">
+                        <p>Id: 14000006</p>
+                        <p> Batch : 1144724</p>
+                    </div> -->
+                    <div class="group">
+                        <p>Quantity : 1.0</p>
+                        <p>Amount : 514.74</p>
+                    </div>
+                    <!-- <div class="group">
+                        <p>Customer Id : 11005301</p>
+                        <p>Customer Name: Najmul Islam Najim</p>
+                    </div> -->
+                    <div class="group">
+                        <p>Time : Delivery</p>
+                        <p>Customer: Md: Abdullah </p>
+                    </div>
+                    
+                    
+                    
+                </div>
+                <div class="card">
+                    <div>
+                        <p>Name : Product Name character should be 46 characters</p>
+                    </div>
+                    <!-- <div class="group">
+                        <p>Id: 14000006</p>
+                        <p> Batch : 1144724</p>
+                    </div> -->
+                    <div class="group">
+                        <p>Quantity : 1.0</p>
+                        <p>Amount : 514.74</p>
+                    </div>
+                    <!-- <div class="group">
+                        <p>Customer Id : 11005301</p>
+                        <p>Customer Name: Najmul Islam Najim</p>
+                    </div> -->
+                    <div class="group">
+                        <p>Time : Delivery</p>
+                        <p>Customer: Md: Abdullah </p>
+                    </div>
+                    
+                    
+                    
+                </div>
 
-    <table>
-      <tr>
-        <td class="signature">
-          <br />
-          _______________________
-          <br />
-          Depot Signature
-        </td>
-        <td class="signature">
-          <br />
-          _______________________
-          <br />
-          DA Signature
-        </td>
-      </tr>
-    </table>
-  </body>
+            </div>
+            <div class="billing-doc">
+                <h4>Billing doc no: 8754445454</h4>
+                <div class="card">
+                    <div>
+                        <p>Name : Product Name character should be 46 characters</p>
+                    </div>
+                    <!-- <div class="group">
+                        <p>Id: 14000006</p>
+                        <p> Batch : 1144724</p>
+                    </div> -->
+                    <div class="group">
+                        <p>Quantity : 1.0</p>
+                        <p>Amount : 514.74</p>
+                    </div>
+                    <!-- <div class="group">
+                        <p>Customer Id : 11005301</p>
+                        <p>Customer Name: Najmul Islam Najim</p>
+                    </div> -->
+                    <div class="group">
+                        <p>Time : Delivery</p>
+                        <p>Customer: Md: Abdullah </p>
+                    </div>
+                    
+                    
+                    
+                </div>
+                <div class="card">
+                    <div>
+                        <p>Name : Product Name character should be 46 characters</p>
+                    </div>
+                    <!-- <div class="group">
+                        <p>Id: 14000006</p>
+                        <p> Batch : 1144724</p>
+                    </div> -->
+                    <div class="group">
+                        <p>Quantity : 1.0</p>
+                        <p>Amount : 514.74</p>
+                    </div>
+                    <!-- <div class="group">
+                        <p>Customer Id : 11005301</p>
+                        <p>Customer Name: Najmul Islam Najim</p>
+                    </div> -->
+                    <div class="group">
+                        <p>Time : Delivery</p>
+                        <p>Customer: Md: Abdullah </p>
+                    </div>
+                    
+                    
+                    
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
 </html>

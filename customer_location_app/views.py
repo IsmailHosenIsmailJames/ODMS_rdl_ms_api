@@ -126,7 +126,7 @@ def customer_list_v2(request,da_code):
         with connection.cursor() as cursor:
             cursor.execute(sql)
             customers = cursor.fetchall()
-        print(sql)
+        # print(sql)
         # Convert raw SQL data to a list of dictionaries
         columns = [
             'partner', 'name1', 'name2', 'contact_person', 'street', 
@@ -137,7 +137,7 @@ def customer_list_v2(request,da_code):
         customer_list = [
             dict(zip(columns, customer)) for customer in customers
         ]
-        print(customer_list)
+        # print(customer_list)
         return Response({
             "success": True,
             "results": customer_list

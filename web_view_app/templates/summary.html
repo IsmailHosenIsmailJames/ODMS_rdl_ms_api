@@ -1,3 +1,4 @@
+{% load humanize %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -11,9 +12,8 @@
         padding: 20px;
         background-color: #f4f4f4;
       }
-      h2 {
-        text-align: center;
-        color: #007bff;
+      .info {
+        padding: 10px;
       }
       .table-container {
         overflow-x: auto;
@@ -28,132 +28,211 @@
       }
       th,
       td {
-        padding: 10px; /* Reduced padding for better fit */
+        padding: 10px;
         text-align: left;
         border-bottom: 1px solid #ddd;
-        word-wrap: break-word; /* Allow long words to break */
-        max-width: 100px; /* Set max width for cells */
-        overflow: hidden; /* Hide overflow */
-        text-overflow: ellipsis; /* Add ellipsis for overflowed text */
       }
       th {
         background-color: #007bff;
         color: white;
       }
+      .total th {
+        background-color: rgb(68, 207, 82);
+      }
       tr:hover {
         background-color: #f1f1f1;
       }
-      .export-button {
-        display: inline-block;
-        padding: 10px 15px;
-        margin: 20px 0;
-        background-color: #007bff;
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-      }
 
-      .export-button:hover {
+      .button {
+          display:inline-block;
+          padding: 10px 15px;
+          margin: 20px 0;
+          border-radius:5px;
+          text-decoration:none;
+          text-align:center;
+          color:#FFFFFF;
+          background-color:#007bff;
+      }
+      .button:hover {
         background-color: #0056b3;
       }
-
-      @media (max-width: 414px) {
-        table,
-        thead,
-        tbody,
-        th,
-        td,
-        tr {
-          display: block;
-        }
-        thead {
-          display: none;
-        }
-        tr {
-          margin-bottom: 10px;
-          border: 1px solid #ddd;
-          border-radius: 5px;
-          background-color: #ffffff;
-        }
-        td {
-          text-align: right;
-          position: relative;
-          padding-left: 50%;
-          max-width: 150px; /* Set a reasonable max-width */
-          overflow-wrap: break-word; /* Ensure text wraps */
-          word-break: break-word; /* Break long words */
-          white-space: normal; /* Allow line breaks */
-        }
-        td::before {
-          content: attr(data-label);
-          position: absolute;
-          left: 10px;
-          width: 45%;
-          padding-left: 10px;
-          font-weight: bold;
-          text-align: left;
-          white-space: nowrap; /* Prevent the label from wrapping */
-        }
-        .gate-pass-no {
-          background-color: #127ac9;
-        }
+      .button-container {
+        display: flex;
+        justify-content: space-between;
       }
     </style>
+    {% if status == 'print' %}
+    <style>
+      div{
+        font-size: 22px;
+        background-color: #fff;
+      }
+      th,
+      td {
+        padding: 5px 10px;
+        width: 33.33%;
+        font-size: 22px;
+      }   
+      
+      th {
+        background-color: #d8dadc;
+        color: rgb(0, 0, 0);
+      }
+      .signature {
+        margin-top: 30px;
+      }
+    </style>
+    {% endif %}
   </head>
-  <body>
-    <h2>DA Summary</h2>
+  <body> 
+    <div class="info">
+      <span style="font-weight: bold;">DA Name: {{ da_info.da_name }}</span> <br>
+      DA Code: {{ da_info.da_code }} <br>
+      Route: {{ da_info.route }} - {{ da_info.route_name }} <br>
+      Billing Date: {{ da_info.billing_date }} <br>
+    </div>
     <div class="table-container">
+      {% for item in data %}
       <table>
         <thead>
           <tr>
-            <th>Gate Pass No</th>
-            <th>Total Invoice</th>
-            <th>Total Amount</th>
-            <th>Delivered Invoice</th>
-            <th>Delivered Amount</th>
-            <th>Delivery Remaining</th>
-            <th>Remaining Delivery Amount</th>
-            <th>Cash Collection</th>
-            <th>Cash Collection Amount</th>
-            <th>Return Amount</th>
-            <th>Due Amount</th>
+            <th class="title" colspan="3" style="border: none">
+              Gate Pass No : {{ item.gate_pass_no }}
+            </th>
+          </tr>
+          <tr>
+            <th>Title</th>
+            <th>Invoice</th>
+            <th>Amount</th>
           </tr>
         </thead>
         <tbody>
-          {% for item in data %}
           <tr>
-            <td data-label="Gate Pass No" class="gate-pass-no">
-              {{ item.gate_pass_no }}
-            </td>
-            <td data-label="Total Invoice">{{ item.total_invoice }}</td>
-            <td data-label="Total Amount">{{ item.total_amount }}</td>
-            <td data-label="Delivery Done">{{ item.delivery_done }}</td>
-            <td data-label="Delivery Amount">{{ item.delivery_net_val }}</td>
-            <td data-label="Delivery Remaining">
-              {{ item.delivery_remaining }}
-            </td>
-            <td data-label="Remaining Delivery Amount">
-              {{ item.remaining_delivery_amount }}
-            </td>
-            <td data-label="Cash Collection">{{ item.cash_collection }}</td>
-            <td data-label="Cash Collection Amount">
-              {{ item.cash_collection_amount }}
-            </td>
-            <td data-label="Return Amount">{{ item.return_amount }}</td>
-            <td data-label="Due Amount">{{ item.due_amount }}</td>
+            <td>Total</td>
+            <td>{{ item.total_invoice }}</td>
+            <td>{{ item.total_amount|intcomma }}</td>
           </tr>
-          {% empty %}
           <tr>
-            <td colspan="10" style="text-align: center">No data available</td>
+            <td>Delivered</td>
+            <td>{{ item.delivery_done }}</td>
+            <td>{{ item.delivery_net_val|intcomma }}</td>
           </tr>
-          {% endfor %}
+          <tr>
+            <td>Delivery Remaining</td>
+            <td>{{ item.delivery_remaining }}</td>
+            <td>{{ item.remaining_delivery_amount|intcomma }}</td>
+          </tr>
+          <tr>
+            <td>Cash Collection</td>
+            <td>{{ item.cash_collection }}</td>
+            <td>{{ item.cash_collection_amount|intcomma }}</td>
+          </tr>
+          <tr>
+            <td>Collection Remaining</td>
+            <td>{{ item.cash_collection_remaining }}</td>
+            <td>{{ item.cash_collection_remaining_amount|intcomma }}</td>
+          </tr>
+          <tr>
+            <td>Return Amount</td>
+            <td>-</td>
+            <td>{{ item.return_amount|intcomma }}</td>
+          </tr>
+          <tr>
+            <td>Due Amount</td>
+            <td>-</td>
+            <td>{{ item.due_amount|intcomma }}</td>
+          </tr>
         </tbody>
       </table>
+      {% empty %}
+      <h3>No data found</h3>
+      {% endfor %}
+
+      {# Total Data #}
+      
+      {% if total.total_gate_pass > 1 %}
+      <table class="total">
+        <thead>
+          <tr>
+            <th class="title" colspan="3" style="border: none">
+              Summary : Total Gate Pass - {{ total.total_gate_pass }}
+            </th>
+          </tr>
+          <tr>
+            <th>Title</th>
+            <th>Invoice</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Total</td>
+            <td>{{ total.total_invoice }}</td>
+            <td>{{ total.total_amount|intcomma }}</td>
+          </tr>
+          <tr>
+            <td>Delivered</td>
+            <td>{{ total.total_delivery }}</td>
+            <td>{{ total.total_delivered_amount|intcomma }}</td>
+          </tr>
+          <tr>
+            <td>Delivery Remaining</td>
+            <td>{{ total.delivery_remaining }}</td>
+            <td>{{ total.remaining_delivery_amount|intcomma }}</td>
+          </tr>
+          <tr>
+            <td>Cash Collection</td>
+            <td>{{ total.total_collection }}</td>
+            <td>{{ total.total_collection_amount|intcomma }}</td>
+          </tr>
+          <tr>
+            <td>Collection Remaining</td>
+            <td>{{ total.cash_collection_remaining }}</td>
+            <td>{{ total.cash_collection_remaining_amount|intcomma }}</td>
+          </tr>
+          <tr>
+            <td>Return Amount</td>
+            <td>-</td>
+            <td>{{ total.total_return_amount|intcomma }}</td>
+          </tr>
+          <tr>
+            <td>Due Amount</td>
+            <td>-</td>
+            <td>{{ total.total_due_amount|intcomma }}</td>
+          </tr>
+        </tbody>
+      </table>
+      {% endif %}
     </div>
-    {% if data %}
-    <a href="{% url 'export_pdf' da_code %}" class="export-button"
-      >Export as PDF</a
-    >
+
+
+    {% if status == 'view' %}
+      <div class="button-container">
+        {% if data %}
+          <a href="{% url 'export_pdf' da_info.da_code %}" class="button">Export</a>
+        {% endif %}
+        <a href="{% url 'reports' da_info.da_code %}" class="button">Back</a>
+      </div>
+    {% elif status == 'print' %}
+      <div class="signature">
+        <table>
+            <tr>
+                <td>
+                    ______________
+                    <br />
+                    Depot Signature
+                </td>
+                <td>
+
+                </td>
+                <td>
+                    ______________
+                    <br />
+                    DA Signature
+                </td>
+            </tr>
+        </table>
+    </div>
     {% endif %}
   </body>
 </html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Due Amount List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .info {
+            padding: 10px;
+        }
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-decoration: none;
+            text-align: center;
+            color: #FFFFFF;
+            background-color: #007bff;
+            align-items: right;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+    </style>
+
+</head>
+<body>
+    <!-- <div class="info">
+        <span style="font-weight: bold;">DA Name: [DA_NAME]</span> <br>
+        DA Code: [DA_CODE] <br>
+        Route: [ROUTE] - [ROUTE_NAME] <br>
+        Billing Date: [BILLING_DATE] <br>
+    </div> -->
+    <div class="table-container">
+        {% for partner in data %}
+            <table>
+                <thead>
+                    <tr>
+                        <th class="title" colspan="2" style="border: none">
+                            {{ partner.pid}} - {{ partner.name }}
+                        </th>
+                    </tr>
+                    <tr style="background-color: #d9ebfb;">
+                        <td>Billing Doc No.</td>
+                        <td>Amount</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invoice in partner.invoice_list %}
+                        <tr>
+                            <td>{{ invoice.billing_doc_no }}</td>
+                            <td>{{ invoice.due_amount }}</td>
+                        </tr>
+                    {% endfor %}  
+                </tbody>
+            </table>
+        {% empty %}
+            <h3>No data found</h3>
+        {% endfor %}
+    </div>
+  
+    <div class="button-container">
+          <a href="{% url 'export_pdf' da_info.da_code %}" ></a>
+
+        <a href="{% url 'reports' da_info.da_code %}" class="button">Back</a>
+      </div>
+
+</body>
+</html>
