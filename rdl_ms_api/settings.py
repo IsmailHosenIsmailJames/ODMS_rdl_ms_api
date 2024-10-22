@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'customer_location_app',
     'conveyance_app',
     'web_view_app',
+    'visit_app',
 ]
 
 MIDDLEWARE = [

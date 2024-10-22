@@ -13,5 +13,6 @@ urlpatterns = [
     path('api/v1/cash_collection/', include('collection_app.urls')),
     path('api/v1/customer_location/', include('customer_location_app.urls')),
     path('api/v1/conveyance/', include('conveyance_app.urls')),
+    path('api/v1/visit/', include('visit_app.urls')),
     path('web_view/v1/', include('web_view_app.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
