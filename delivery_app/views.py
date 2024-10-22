@@ -29,9 +29,9 @@ def delivery_list_v2(request,sap_id):
 
         sql = "SELECT dis.*,IFNULL(rs.description, 'No Route Name') AS route_name, " \
                 "sis.billing_type,sis.partner,sis.matnr,sis.quantity,sis.tp,sis.vat,sis.net_val,sis.assigment,sis.gate_pass_no,sis.batch,sis.plant,sis.team,sis.created_on, " \
-                "m.material_name,m.brand_description,m.brand_name, " \
+                "m.material_name,m.brand_description,m.brand_name,m.producer_company, " \
                 "CONCAT(c.name1,c.name2) customer_name,CONCAT(c.street,c.street1,c.street2) customer_address,c.mobile_no customer_mobile, " \
-                "cl.latitude,cl.longitude, " \
+                "cl.latitude,cl.longitude,rcl.latitude customer_latitude,rcl.longitude customer_longitude, " \
                 "d.id,dl.id list_id,d.transport_type," \
                 "dl.delivery_quantity,dl.delivery_net_val,dl.return_quantity,dl.return_net_val,IF(d.delivery_status IS NULL,'Pending',d.delivery_status) delivery_status,d.cash_collection,IF(d.cash_collection_status IS NULL,'Pending',d.cash_collection_status) cash_collection_status, (SELECT SUM(d2.due_amount) FROM rdl_delivery d2 WHERE d2.partner=sis.partner AND d2.billing_date<CURRENT_DATE) AS previous_due_amount " \
                 "FROM rdl_delivery_info_sap dis " \
@@ -39,6 +39,7 @@ def delivery_list_v2(request,sap_id):
                 "INNER JOIN rpl_sales_info_sap sis ON dis.billing_doc_no=sis.billing_doc_no " \
                 "INNER JOIN rpl_material m ON sis.matnr=m.matnr " \
                 "INNER JOIN rpl_customer c ON sis.partner=c.partner " \
+                "INNER JOIN rdl_customer_location rcl ON c.partner=rcl.customer_id " \
                 "LEFT JOIN (SELECT DISTINCT customer_id, latitude, longitude FROM rdl_customer_location LIMIT 1) cl ON sis.partner = cl.customer_id " \
                 "LEFT JOIN rdl_delivery d ON sis.billing_doc_no=d.billing_doc_no " \
                 "LEFT JOIN rdl_delivery_list dl ON d.id=dl.delivery_id AND sis.matnr=dl.matnr AND sis.batch=dl.batch " \
@@ -93,6 +94,7 @@ def delivery_list_v2(request,sap_id):
             main_data = {
                 "id": key_and_group[key][0].id,
                 "billing_doc_no": key_and_group[key][0].billing_doc_no,
+                "producer_company": key_and_group[key][0].producer_company,
                 "billing_date": key_and_group[key][0].billing_date,
                 "route_code": key_and_group[key][0].route,
                 "route_name": key_and_group[key][0].route_name,
@@ -130,6 +132,8 @@ def delivery_list_v2(request,sap_id):
                     "customer_name": group[0]['customer_name'],
                     "customer_address": group[0]['customer_address'],
                     "customer_mobile": group[0]['customer_mobile'],
+                    "customer_latitude": key_and_group[key][0].customer_latitude,
+                    "customer_longitude": key_and_group[key][0].customer_longitude,
                     "previous_due_amount":group[0]['previous_due_amount'],
                     "latitude": group[0]['latitude'],
                     "longitude": group[0]['longitude'],
