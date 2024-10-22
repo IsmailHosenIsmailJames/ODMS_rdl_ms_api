@@ -45,7 +45,7 @@ def delivery_list_v2(request,sap_id):
                 "LEFT JOIN rdl_delivery_list dl ON d.id=dl.delivery_id AND sis.matnr=dl.matnr AND sis.batch=dl.batch " \
                 "WHERE dis.da_code = '%s' "+query+" ;"
     
-    print(sql)
+    # print(sql)
     data_list = DeliveryInfoModel.objects.raw(sql,[sap_id])
     if len(data_list) == 0:
         return Response({"success": False, "message": "Data not available!"}, status=status.HTTP_200_OK)
