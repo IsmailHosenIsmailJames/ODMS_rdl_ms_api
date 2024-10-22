@@ -6,15 +6,15 @@ from collections import defaultdict
 
 # Get SAP Assigned Data
 def get_sap_data(da_code):
-    sql = f"SELECT dis.da_name,dis.route,rs.description,dis.billing_doc_no, dis.billing_date, sis.vat, sis.net_val, (sis.vat+sis.net_val) total_amount, sis.gate_pass_no FROM rdl_delivery_info_sap dis INNER JOIN rpl_sales_info_sap sis ON dis.billing_doc_no=sis.billing_doc_no INNER JOIN rdl_route_sap rs ON dis.route=rs.route WHERE dis.da_code=%s AND dis.billing_date=CURRENT_DATE;"
+    sql = f"SELECT dis.da_name,dis.route,dis.billing_doc_no, dis.billing_date, sis.vat, sis.net_val, (sis.vat+sis.net_val) total_amount, sis.gate_pass_no FROM rdl_delivery_info_sap dis INNER JOIN rpl_sales_info_sap sis ON dis.billing_doc_no=sis.billing_doc_no  WHERE dis.da_code=%s AND dis.billing_date=CURRENT_DATE;"
     results = DeliveryInfoModel.objects.raw(sql, [da_code])
     sorted_results = sorted(results, key=lambda x: x.gate_pass_no)
     grouped_results = groupby(sorted_results, key=lambda x: x.gate_pass_no)
+
     da_info={
         "da_code":da_code,
         "da_name":results[0].da_name,
         "route":results[0].route,
-        "route_name":results[0].description,
         "billing_date":results[0].billing_date
     }
     # Total Data
@@ -42,6 +42,9 @@ def get_sap_data(da_code):
             "total_amount": round(total_amount, 2),
             "total_invoice": len(total_invoice),
         }
+    for gate_pass_no, group in grouped_results:
+        print(gate_pass_no)
+        print(group)
     data=[sap_data,da_info,total_data]
     return data
 
