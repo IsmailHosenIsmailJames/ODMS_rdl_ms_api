@@ -140,6 +140,7 @@ def customer_list_v2(request,da_code):
         # print(customer_list)
         return Response({
             "success": True,
+            "route": route,
             "results": customer_list
         }, status=status.HTTP_200_OK)
 
