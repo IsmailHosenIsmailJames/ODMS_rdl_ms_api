@@ -8,7 +8,10 @@ def app_info(request):
         data={
             "version":"1.7.3",
             "buildNumber":"11",
-            "willForceToUpdate":True,
+            "forceToUpdate":True,
+            "removeCacheOnUpdate":False,
+            "removeDataOnUpdate":False,
+            "removeCacheAndDataOnUpdate":False,
             "downloadLink":"https://github.com/odms/odms/releases/tag/v0.0.1",
             "downloadLinkList":[
                 {
