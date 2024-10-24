@@ -6,25 +6,25 @@ from rest_framework.decorators import api_view
 def app_info(request):
     if request.method == 'GET':
         data={
-            "version":"1.6.6",
-            "buildNumber":"13",
+            "version":"1.6.7",
+            "buildNumber":"14",
             "forceToUpdate":True,
             "removeCacheOnUpdate":False,
             "removeDataOnUpdate":False,
             "removeCacheAndDataOnUpdate":False,
-            "downloadLink":"https://github.com/IsmailHosenIsmailJames/ODMS_app_rdl_radiant/releases/download/1.6.6/app-release.apk",
+            "downloadLink":"https://github.com/IsmailHosenIsmailJames/ODMS_app_rdl_radiant/releases/download/v1.6.7/app-release.apk",
             "downloadLinkList":[
                 {
                     "architecture":"x86_64",
-                    "link":"https://github.com/IsmailHosenIsmailJames/ODMS_app_rdl_radiant/releases/download/1.6.6/app-x86_64-release.apk"
+                    "link":"https://github.com/IsmailHosenIsmailJames/ODMS_app_rdl_radiant/releases/download/v1.6.7/app-x86_64-release.apk"
                 },
                 {
                     "architecture":"armeabi-v7a",
-                    "link":"https://github.com/IsmailHosenIsmailJames/ODMS_app_rdl_radiant/releases/download/1.6.6/app-armeabi-v7a-release.apk"
+                    "link":"https://github.com/IsmailHosenIsmailJames/ODMS_app_rdl_radiant/releases/download/v1.6.7/app-armeabi-v7a-release.apk"
                 },
                 {
                     "architecture":"arm64-v8a",
-                    "link":"https://github.com/IsmailHosenIsmailJames/ODMS_app_rdl_radiant/releases/download/1.6.6/app-arm64-v8a-release.apk"
+                    "link":"https://github.com/IsmailHosenIsmailJames/ODMS_app_rdl_radiant/releases/download/v1.6.7/app-arm64-v8a-release.apk"
                 }
             ]
         }
