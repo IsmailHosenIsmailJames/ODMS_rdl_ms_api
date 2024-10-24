@@ -379,7 +379,7 @@ def cash_overdue(request,da_code):
 
         sql = "SELECT dis.*,IFNULL(rs.description, 'No Route Name') AS route_name, " \
                 "sis.billing_type,sis.partner,sis.matnr,sis.quantity,sis.tp,sis.vat,sis.net_val,sis.assigment,sis.gate_pass_no,sis.batch,sis.plant,sis.team,sis.created_on, " \
-                "m.material_name,m.brand_description,m.brand_name, " \
+                "m.material_name,m.brand_description,m.brand_name,m.producer_company, " \
                 "CONCAT(c.name1,c.name2) customer_name,CONCAT(c.street,c.street1,c.street2) customer_address,c.mobile_no customer_mobile, " \
                 "cl.latitude,cl.longitude, " \
                 "d.id,dl.id list_id,d.transport_type," \
@@ -444,6 +444,7 @@ def cash_overdue(request,da_code):
                 main_data = {
                     "id": key_and_group[key][0].id,
                     "billing_doc_no": key_and_group[key][0].billing_doc_no,
+                    "producer_company": key_and_group[key][0].producer_company,
                     "billing_date": key_and_group[key][0].billing_date,
                     "route_code": key_and_group[key][0].route,
                     "route_name": key_and_group[key][0].route_name,
