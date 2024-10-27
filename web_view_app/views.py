@@ -42,14 +42,14 @@ def test(request,da_code):
     }
     return render(request,"test.html",{"da_info":da_info,"status":"view"})
 
-def product_return_list_v1(request,da_code):
-    data_list=get_product_return_list(da_code)
+def product_return_list_v2(request,da_code):
+    data_list=get_product_return_list2(da_code)
     return_list=data_list[0]
     total_return=data_list[1]
     da_info={
         "da_code":da_code
     }
-    return render(request,"return_list_v1.html",{"return_list":return_list,"total_return":total_return,"da_info":da_info,"status":"view"})
+    return render(request,"return_list_v2.html",{"return_list":return_list,"total_return":total_return,"da_info":da_info,"status":"view"})
 
 def due_amount_list(request,da_code):
     data_list=get_due_amount_list(da_code)
@@ -58,10 +58,10 @@ def due_amount_list(request,da_code):
     }
     return render(request,"due_amount_list.html",{"data":data_list,"da_info":da_info})
 
-def product_return_list_v2(request,da_code):
-    data_list=get_product_return_list2(da_code)
+def product_return_list_v1(request,da_code):
+    data_list=get_product_return_list(da_code)
     da_info={
         "da_code":da_code
     }
-    return render(request,"return_list_v2.html",{"data":data_list,"da_info":da_info})
+    return render(request,"return_list_v1.html",{"data":data_list,"da_info":da_info})
 
