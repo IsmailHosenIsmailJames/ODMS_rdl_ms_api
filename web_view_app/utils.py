@@ -124,7 +124,7 @@ def get_main_data(da_code):
             "delivery_done": delivery.get("total_delivery_done", 0),
             "delivery_net_val": round(delivery.get("net_val", 0.00)-(delivery.get("total_return_amount", 0.00) or 0.00),2),
             "delivery_remaining": items.get("total_invoice", 0) - (delivery.get("total_delivery_done", 0) or 0),
-            "remaining_delivery_amount": round(items.get("total_amount", 0.00) - (delivery.get("delivery_net_val", 0.00) or 0.00),2),
+            "remaining_delivery_amount": round(items.get("total_amount", 0.00) - round(delivery.get("net_val", 0.00)-(delivery.get("total_return_amount", 0.00) or 0.00),2)),
             "cash_collection": delivery.get("total_cash_collection", 0),
             "cash_collection_amount": round(delivery.get("total_cash_collection_amount", 0.00),2),
             "cash_collection_remaining": delivery.get("total_delivery_done", 0) - (delivery.get("total_cash_collection", 0) or 0),
