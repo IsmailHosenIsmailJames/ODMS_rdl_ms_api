@@ -135,7 +135,7 @@ def delivery_list_v2(request,sap_id):
                     "customer_address": group[0]['customer_address'],
                     "customer_mobile": group[0]['customer_mobile'],
                     "customer_latitude": group[0]['customer_latitude'],
-                    "customer_longitude": group[0]['customer_latitude'],
+                    "customer_longitude": group[0]['customer_longitude'],
                     "previous_due_amount":group[0]['previous_due_amount'],
                     "latitude": group[0]['latitude'],
                     "longitude": group[0]['longitude'],
