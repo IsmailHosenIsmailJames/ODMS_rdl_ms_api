@@ -10,4 +10,5 @@ urlpatterns = [
     path('due_amount_list/<int:da_code>', views.due_amount_list, name='due_amount_list'),
     path('return_list/v2/<int:da_code>', views.product_return_list_v2, name='return_list_v2'),
     path('dashboard_manual', views.admin_dashboard_manual, name='dashboard_manual'),
+    path('manual', views.dashboard_manual, name='manual'),
 ]

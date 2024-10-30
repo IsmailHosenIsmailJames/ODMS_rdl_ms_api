@@ -68,3 +68,6 @@ def product_return_list_v1(request,da_code):
 
 def admin_dashboard_manual(request):
     return render(request, "admin_dashboard_manual.html")
+
+def dashboard_manual(request):
+    return render(request, "dashboard_manual.html")
