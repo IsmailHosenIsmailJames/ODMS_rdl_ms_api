@@ -65,3 +65,6 @@ def product_return_list_v1(request,da_code):
     }
     return render(request,"return_list_v1.html",{"data":data_list,"da_info":da_info})
 
+
+def admin_dashboard_manual(request):
+    return render(request, "admin_dashboard_manual.html")
