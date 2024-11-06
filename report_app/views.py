@@ -61,6 +61,9 @@ def dashboard_report(request,sap_id):
         #     "WHERE " \
         #         "dis.billing_date = CURRENT_DATE() AND dis.da_code = '%s'"
         # result = execute_raw_query(sql,[sap_id,sap_id])
+        
+        time_interval=1*60*1000 #millisecond
+        distance=10 #meter
 
         return Response({"success": True, "result": [{
             'delivery_remaining': result[0][0]-result[0][1],
@@ -73,6 +76,8 @@ def dashboard_report(request,sap_id):
             'total_return_amount': result[0][6], 
             'total_return_quantity': result[0][7],
             'due_amount_total': result[0][8],
-            'previous_day_due': 0
+            'previous_day_due': 0,
+            'time_interval': time_interval,
+            'distance': distance
         }]}, status=status.HTTP_200_OK)
     

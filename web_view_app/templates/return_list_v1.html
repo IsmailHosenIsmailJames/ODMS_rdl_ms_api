@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Return List</title>
+    <style>
+      .card {
+        border-radius: 5px;
+        box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+          rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+        margin-bottom: 2px;
+      }
+      .card-title {
+        font-weight: bold;
+        padding: 1px 0px 2px 5px;
+        background-color: #007bff;
+        color: white;
+      }
+      .header {
+        background-color: #d9ebfb;
+        text-align: center;
+      }
+      .header p {
+        margin: 0px;
+        padding: 10px 0px 10px 0px;
+        font-weight: bold;
+      }
+      div {
+        padding: 0px;
+        margin: 0px;
+      }
+      .group {
+        display: flex;
+        background-color: #e9efec;
+      }
+      .group p {
+        width: 33.33%;
+        text-align: center;
+        margin: 0px;
+        padding: 2px;
+      }
+      .card-values {
+        border-radius: 10px;
+        margin-bottom: 1px;
+      }
+      .button {
+        display: inline-block;
+        padding: 10px 15px;
+        margin: 20px 0;
+        border-radius: 5px;
+        text-decoration: none;
+        text-align: center;
+        color: #ffffff;
+        background-color: #007bff;
+        align-items: right;
+      }
+      .button:hover {
+        background-color: #0056b3;
+      }
+      .button-container {
+        display: flex;
+        justify-content: space-between;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      {% for partner in data %}
+      <div class="card">
+        <div class="card-title">
+          <p>{{partner.pid}} - {{partner.name}}</p>
+        </div>
+        {% for product in partner.return_list %}
+        <div class="card-values">
+          <div class="header">
+            <p>{{ product.material_name}}</p>
+          </div>
+          <div class="info-card">
+            <div class="group">
+              <p>Batch</p>
+              <p>Quantity</p>
+              <p>Amount</p>
+            </div>
+            <div class="group">
+              <p>{{ product.batch }}</p>
+              <p>{{ product.return_quantity }}</p>
+              <p>{{ product.return_net_val }}</p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% empty %}
+      <h3>No data found</h3>
+      {% endfor %}
+    </div>
+    <div class="button-container">
+      <a href="{% url 'export_pdf' da_info.da_code %}"></a>
+
+      <a href="{% url 'reports' da_info.da_code %}" class="button">Back</a>
+    </div>
+  </body>
+</html>

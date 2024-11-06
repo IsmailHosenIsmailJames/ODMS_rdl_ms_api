@@ -45,12 +45,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'rest_framework',
     'user_app',
     'attendance_app',
     'report_app',
     'delivery_app',
     'collection_app',
+    'customer_location_app',
+    'conveyance_app',
+    'web_view_app',
+    'visit_app',
 ]
 
 MIDDLEWARE = [

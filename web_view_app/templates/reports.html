@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ODMS Reports</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f4f4f4;
+      }
+      .button {
+        display: block;
+        padding: 10px 15px;
+        margin: 20px auto;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        text-align: center;
+        border-radius: 5px;
+        width: 200px;
+      }
+
+      .button:hover {
+        background-color: #0056b3;
+      }
+
+      .button-container {
+        text-align: center;
+      }
+    </style>
+</head>
+<body>
+  <div class="button-container">
+    <a href="{% url 'da_summary' da_code %}" class="button">Today's Summary</a>
+
+    <a href="{% url 'return_list_v1' da_code %}" class="button">Product Return List</a>
+    
+    <a href="{% url 'due_amount_list' da_code %}" class="button">Due Amount List</a>
+    
+    <a href="{% url 'return_list_v2' da_code %}" class="button">Product Return List v2</a>
+
+    <!-- <a href="#" class="button">Summary</a> -->
+  </div>
+    
+</body>
+</html>

@@ -1,0 +1,238 @@
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DA Summary</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f4f4f4;
+      }
+      .info {
+        padding: 10px;
+      }
+      .table-container {
+        overflow-x: auto;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+      th {
+        background-color: #007bff;
+        color: white;
+      }
+      .total th {
+        background-color: rgb(68, 207, 82);
+      }
+      tr:hover {
+        background-color: #f1f1f1;
+      }
+
+      .button {
+          display:inline-block;
+          padding: 10px 15px;
+          margin: 20px 0;
+          border-radius:5px;
+          text-decoration:none;
+          text-align:center;
+          color:#FFFFFF;
+          background-color:#007bff;
+      }
+      .button:hover {
+        background-color: #0056b3;
+      }
+      .button-container {
+        display: flex;
+        justify-content: space-between;
+      }
+    </style>
+    {% if status == 'print' %}
+    <style>
+      div{
+        font-size: 22px;
+        background-color: #fff;
+      }
+      th,
+      td {
+        padding: 5px 10px;
+        width: 33.33%;
+        font-size: 22px;
+      }   
+      
+      th {
+        background-color: #d8dadc;
+        color: rgb(0, 0, 0);
+      }
+      .signature {
+        margin-top: 30px;
+      }
+    </style>
+    {% endif %}
+  </head>
+  <body> 
+    <div class="info">
+      <span style="font-weight: bold;">DA Name: {{ da_info.da_name }}</span> <br>
+      DA Code: {{ da_info.da_code }} <br>
+      Route: {{ da_info.route }} <br>
+      Billing Date: {{ da_info.billing_date }} <br>
+    </div>
+    <div class="table-container">
+      {% for item in data %}
+      <table>
+        <thead>
+          <tr>
+            <th class="title" colspan="3" style="border: none">
+              Gate Pass No : {{ item.gate_pass_no }}
+            </th>
+          </tr>
+          <tr>
+            <th>Title</th>
+            <th>Invoice</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Total</td>
+            <td>{{ item.total_invoice }}</td>
+            <td>{{ item.total_amount|intcomma }}</td>
+          </tr>
+          <tr>
+            <td>Delivered</td>
+            <td>{{ item.delivery_done }}</td>
+            <td>{{ item.delivery_net_val|intcomma }}</td>
+          </tr>
+          <tr>
+            <td>Delivery Remaining</td>
+            <td>{{ item.delivery_remaining }}</td>
+            <td>{{ item.remaining_delivery_amount|intcomma }}</td>
+          </tr>
+          <tr>
+            <td>Cash Collection</td>
+            <td>{{ item.cash_collection }}</td>
+            <td>{{ item.cash_collection_amount|intcomma }}</td>
+          </tr>
+          <tr>
+            <td>Collection Remaining</td>
+            <td>{{ item.cash_collection_remaining }}</td>
+            <td>{{ item.cash_collection_remaining_amount|intcomma }}</td>
+          </tr>
+          <tr>
+            <td>Return Amount</td>
+            <td>-</td>
+            <td>{{ item.return_amount|intcomma }}</td>
+          </tr>
+          <tr>
+            <td>Due Amount</td>
+            <td>-</td>
+            <td>{{ item.due_amount|intcomma }}</td>
+          </tr>
+        </tbody>
+      </table>
+      {% empty %}
+      <h3>No data found</h3>
+      {% endfor %}
+
+      {# Total Data #}
+      
+      {% if total.total_gate_pass > 1 %}
+      <table class="total">
+        <thead>
+          <tr>
+            <th class="title" colspan="3" style="border: none">
+              Summary : Total Gate Pass - {{ total.total_gate_pass }}
+            </th>
+          </tr>
+          <tr>
+            <th>Title</th>
+            <th>Invoice</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Total</td>
+            <td>{{ total.total_invoice }}</td>
+            <td>{{ total.total_amount|intcomma }}</td>
+          </tr>
+          <tr>
+            <td>Delivered</td>
+            <td>{{ total.total_delivery }}</td>
+            <td>{{ total.total_delivered_amount|intcomma }}</td>
+          </tr>
+          <tr>
+            <td>Delivery Remaining</td>
+            <td>{{ total.delivery_remaining }}</td>
+            <td>{{ total.remaining_delivery_amount|intcomma }}</td>
+          </tr>
+          <tr>
+            <td>Cash Collection</td>
+            <td>{{ total.total_collection }}</td>
+            <td>{{ total.total_collection_amount|intcomma }}</td>
+          </tr>
+          <tr>
+            <td>Collection Remaining</td>
+            <td>{{ total.cash_collection_remaining }}</td>
+            <td>{{ total.cash_collection_remaining_amount|intcomma }}</td>
+          </tr>
+          <tr>
+            <td>Return Amount</td>
+            <td>-</td>
+            <td>{{ total.total_return_amount|intcomma }}</td>
+          </tr>
+          <tr>
+            <td>Due Amount</td>
+            <td>-</td>
+            <td>{{ total.total_due_amount|intcomma }}</td>
+          </tr>
+        </tbody>
+      </table>
+      {% endif %}
+    </div>
+
+
+    {% if status == 'view' %}
+      <div class="button-container">
+        {% if data %}
+          <a href="{% url 'export_pdf' da_info.da_code %}" class="button">Export</a>
+        {% endif %}
+        <a href="{% url 'reports' da_info.da_code %}" class="button">Back</a>
+      </div>
+    {% elif status == 'print' %}
+      <div class="signature">
+        <table>
+            <tr>
+                <td>
+                    ______________
+                    <br />
+                    Depot Signature
+                </td>
+                <td>
+
+                </td>
+                <td>
+                    ______________
+                    <br />
+                    DA Signature
+                </td>
+            </tr>
+        </table>
+    </div>
+    {% endif %}
+  </body>
+</html>

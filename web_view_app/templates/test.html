@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Return List</title>
+    <style>
+        .card {
+            box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+            padding: 5px;
+        }
+        div{
+            padding: 0px;
+            margin:0px;
+        }
+        p {
+            margin: 5px 0px;
+        }
+        .group {
+            display: flex;
+        }
+        .group p {
+            width: 50%;
+        }
+        .gate-pass {
+            border: 1 px solid gray;
+            border-radius: 5px;
+            box-shadow: rgba(142, 138, 138, 0.02) 0px 1px 3px 0px, rgba(146, 149, 152, 0.15) 0px 0px 0px 1px;
+        }
+        h4{
+          padding: 0px 5px;
+        }
+        .button {
+          display:inline-block;
+          padding: 10px 15px;
+          margin: 20px 0;
+          border-radius:5px;
+          text-decoration:none;
+          text-align:center;
+          color:#FFFFFF;
+          background-color:#007bff;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    {% if status == 'view' %}
+    <div>
+      <a href="{% url 'reports' da_info.da_code %}" class="button">Back</a>
+    </div>
+    {% endif %}
+    <div class="container">
+        <div class="gate-pass">
+            <h4>Gate Pass No: 46546564564</h4>
+            <div class="billing-doc">
+                <h4>Billing doc no: 8754445454</h4>
+                <div class="card">
+                    <div>
+                        <p>Name : Product Name character should be 46 characters</p>
+                    </div>
+                    <!-- <div class="group">
+                        <p>Id: 14000006</p>
+                        <p> Batch : 1144724</p>
+                    </div> -->
+                    <div class="group">
+                        <p>Quantity : 1.0</p>
+                        <p>Amount : 514.74</p>
+                    </div>
+                    <!-- <div class="group">
+                        <p>Customer Id : 11005301</p>
+                        <p>Customer Name: Najmul Islam Najim</p>
+                    </div> -->
+                    <div class="group">
+                        <p>Time : Delivery</p>
+                        <p>Customer: Md: Abdullah </p>
+                    </div>
+                    
+                    
+                    
+                </div>
+                <div class="card">
+                    <div>
+                        <p>Name : Product Name character should be 46 characters</p>
+                    </div>
+                    <!-- <div class="group">
+                        <p>Id: 14000006</p>
+                        <p> Batch : 1144724</p>
+                    </div> -->
+                    <div class="group">
+                        <p>Quantity : 1.0</p>
+                        <p>Amount : 514.74</p>
+                    </div>
+                    <!-- <div class="group">
+                        <p>Customer Id : 11005301</p>
+                        <p>Customer Name: Najmul Islam Najim</p>
+                    </div> -->
+                    <div class="group">
+                        <p>Time : Delivery</p>
+                        <p>Customer: Md: Abdullah </p>
+                    </div>
+                    
+                    
+                    
+                </div>
+
+            </div>
+            <div class="billing-doc">
+                <h4>Billing doc no: 8754445454</h4>
+                <div class="card">
+                    <div>
+                        <p>Name : Product Name character should be 46 characters</p>
+                    </div>
+                    <!-- <div class="group">
+                        <p>Id: 14000006</p>
+                        <p> Batch : 1144724</p>
+                    </div> -->
+                    <div class="group">
+                        <p>Quantity : 1.0</p>
+                        <p>Amount : 514.74</p>
+                    </div>
+                    <!-- <div class="group">
+                        <p>Customer Id : 11005301</p>
+                        <p>Customer Name: Najmul Islam Najim</p>
+                    </div> -->
+                    <div class="group">
+                        <p>Time : Delivery</p>
+                        <p>Customer: Md: Abdullah </p>
+                    </div>
+                    
+                    
+                    
+                </div>
+                <div class="card">
+                    <div>
+                        <p>Name : Product Name character should be 46 characters</p>
+                    </div>
+                    <!-- <div class="group">
+                        <p>Id: 14000006</p>
+                        <p> Batch : 1144724</p>
+                    </div> -->
+                    <div class="group">
+                        <p>Quantity : 1.0</p>
+                        <p>Amount : 514.74</p>
+                    </div>
+                    <!-- <div class="group">
+                        <p>Customer Id : 11005301</p>
+                        <p>Customer Name: Najmul Islam Najim</p>
+                    </div> -->
+                    <div class="group">
+                        <p>Time : Delivery</p>
+                        <p>Customer: Md: Abdullah </p>
+                    </div>
+                    
+                    
+                    
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>
